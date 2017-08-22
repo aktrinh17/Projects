@@ -27,9 +27,11 @@ public class QuickSort
       } 
    }
    
-   public void switchVals()
+   public void switchVals(int posOne, int posTwo) //method to switch the position of two integers
    {
-      
+      int temp = anArray[posOne];
+      anArray[posOne] = anArray[posTwo];
+      anArray[posTwo] = temp;
    }
     
    public void quickSort()
