@@ -8,16 +8,22 @@ public class QuickSort
    
    public static void main(String[] args)
    {
-      QuickSort hArray = new QuickSort(10);
-      hArray.createRandArray();
-      System.out.println(Arrays.toString(QuickSort.anArray));
+      //creates an array of size 10 
+      QuickSort sortArray = new QuickSort(10);
+      
+      //creates a random array and prints it out
+      sortArray.createRandArray();
+      System.out.println("Random Array: " + Arrays.toString(QuickSort.anArray));
+      
+      //uses quicksort to sort the array and prints it out
+      sortArray.quickSort(0, 9);
+      System.out.println("After Sorting: " + Arrays.toString(QuickSort.anArray));
    }
       
    QuickSort(int currArraySize) 
    {
       arrayLength = currArraySize;
       anArray = new int[arrayLength];
-      createRandArray();
    }
    
    //method to create an array with random values from 10 to 100 
@@ -52,8 +58,11 @@ public class QuickSort
          int pivotP = anArray[rightP];
          int pivotPosition = partition(leftP, rightP, pivotP);
          
+         //goes through again to sort the left side of the array
          quickSort(leftP, pivotPosition -1);
-         quickSort(pivotPosition -1, rightP);
+         
+         //goes throught again to sort the right side of the array
+         quickSort(pivotPosition +1, rightP);
       }      
    }
    
