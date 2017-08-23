@@ -30,15 +30,14 @@ public class QuickSort
    {
       arrayLength = currArraySize;
       anArray = new int[arrayLength];
-      createRandArray();
    }
    
-   //method to create an array with random values from 10 to 100 
+   //method to create an array with random values from 0 to 100 
    public void createRandArray()  
    {
       for (int i = 0; i < arrayLength; i++)
       {
-         anArray[i] = (int)(Math.random() * 91) + 10;
+         anArray[i] = (int)(Math.random() * 100 + 1);
       } 
    }
    
