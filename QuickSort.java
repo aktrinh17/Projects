@@ -1,5 +1,6 @@
 //This is an example that shows how quicksort operates
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class QuickSort
 {
@@ -7,16 +8,21 @@ public class QuickSort
    private static int arrayLength; 
    
    public static void main(String[] args)
-   {
-      //creates an array of size 10 
-      QuickSort sortArray = new QuickSort(10);
+   {  
+      //takes input to define "num" as the size of the array
+      Scanner input = new Scanner(System.in);
+      System.out.println("How many elements would you like the array to contain?");
+      int num = input.nextInt();
+      
+      //creates an array of size num 
+      QuickSort sortArray = new QuickSort(num);
       
       //creates a random array and prints it out
       sortArray.createRandArray();
       System.out.println("Random Array: " + Arrays.toString(QuickSort.anArray));
       
       //uses quicksort to sort the array and prints it out
-      sortArray.quickSort(0, 9);
+      sortArray.quickSort(0, num -1);
       System.out.println("After Sorting: " + Arrays.toString(QuickSort.anArray));
    }
       
@@ -24,6 +30,7 @@ public class QuickSort
    {
       arrayLength = currArraySize;
       anArray = new int[arrayLength];
+      createRandArray();
    }
    
    //method to create an array with random values from 10 to 100 
