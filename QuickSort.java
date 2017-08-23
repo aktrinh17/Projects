@@ -17,6 +17,7 @@ public class QuickSort
    {
       arrayLength = currArraySize;
       anArray = new int[arrayLength];
+      createRandArray();
    }
    
    //method to create an array with random values from 10 to 100 
@@ -36,9 +37,24 @@ public class QuickSort
       anArray[posTwo] = temp;
    }
     
-   public void quickSort()
+   public void quickSort(int leftP, int rightP)
    {
+      //when this is true, the array must be sorted
+      if (rightP - leftP <= 0)
+      {
+         return;
+      }
       
+      //if the above is not true, more sorting is required
+      //through recursive means
+      else
+      {
+         int pivotP = anArray[rightP];
+         int pivotPosition = partition(leftP, rightP, pivotP);
+         
+         quickSort(leftP, pivotPosition -1);
+         quickSort(pivotPosition -1, rightP);
+      }      
    }
    
    //method takes in left and right pointers and a pivot point   
@@ -50,11 +66,11 @@ public class QuickSort
       {
          //operates until an integer smaller than the pivot
          //is found or reaches the pivot point
-         while (anArray[++leftPoint] < pivot); 
+         while (anArray[++leftPoint] < pivotP); 
          
          //operates until an integer larger than the pivot
          //is found or reaches the pivot point
-         while (rightPoint > 0 && theArray[--rightPoint] > pivot);
+         while (rightPoint > 0 && anArray[--rightPoint] > pivotP);
          
          /*if a number on the left side is found to be
            greater than a number on the right side,
@@ -66,7 +82,7 @@ public class QuickSort
          
          else
          {
-            switchVals(leftPoint, rightPoint)
+            switchVals(leftPoint, rightPoint);
          }
       }
       
