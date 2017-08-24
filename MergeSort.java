@@ -20,6 +20,10 @@ public class MergeSort
       //creates a random array and prints it out
       sortArray.createRandArray();
       System.out.println("Random Array: " + Arrays.toString(MergeSort.anArray));
+      
+      //uses mergesort to sort the array and prints it out
+      sortArray = divide(sortArray);
+      System.out.println("After Sorting: " + Arrays.toString(MergeSort.anArray));
    }
    
    MergeSort(int currArraySize) 
@@ -87,16 +91,54 @@ public class MergeSort
       
       //recursively divides the left and right portions
       //of the array
-      leftArray = merge(leftArray);
-      rightArray = merge(rightArray);
+      leftArray = divide(leftArray);
+      rightArray = divide(rightArray);
       
       result = merge(leftArray, rightArray);
       return result;
 
    }
    
-   public void merge()
+   public static int[] merge(int[] leftArray, int[] rightArray)
    {
-   
+      int totalLength = leftArray.length + rightArray.length;
+      int[] result = new int[totalLength];
+      int leftPointer = 0;
+      int rightPointer = 0;
+      int resultPointer = 0;
+      
+      while (leftPointer < leftArray.length || rightPointer < rightArray.length)
+      {
+         //if there are still elements in both arrays
+         //continue to combine
+         if (leftPointer < leftArray.length && rightPointer < rightArray.length)
+         {
+            //if the left element is smaller, then put it 
+            //into the array, otherwise, put the right element
+            if (leftArray[leftPointer] <= rightArray[rightPointer])
+            {
+               result[resultPointer++] = leftArray[leftPointer];
+            }
+            
+            else
+            {
+               result[resultPointer++] = rightArray[rightPointer];
+            }
+         }
+         
+         //if the right array has no more elements,
+         //add the remaining elements in the left
+         else if (leftPointer < leftArray.length)
+         {
+            result[resultPointer++] = leftArray[leftPointer++];
+         }
+         
+         else if (rightPointer < rightArray.length)
+         {
+            result[resultPointer++] = rightArray[rightPointer++];
+         }
+      }
+      
+      return result;
    }
 }
