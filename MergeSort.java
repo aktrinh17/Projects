@@ -39,7 +39,7 @@ public class MergeSort
    
    //method to divide an array into individual arrays
    //containing only 1 element each
-   public static int divide(int[] otherArray)
+   public static int[] divide(int[] otherArray)
    {
       int[] result = new int[otherArray.length];
       
@@ -67,7 +67,7 @@ public class MergeSort
       //gain an additional element 
       else
       {
-         rightArray = new int[++midpoint];
+         rightArray = new int[++middle];
       }
       
       //fills up the left array with the leftmost
