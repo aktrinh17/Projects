@@ -22,7 +22,7 @@ public class MergeSort
       System.out.println("Random Array: " + Arrays.toString(MergeSort.anArray));
       
       //uses mergesort to sort the array and prints it out
-      sortArray = divide(sortArray);
+      anArray = divide(anArray);
       System.out.println("After Sorting: " + Arrays.toString(MergeSort.anArray));
    }
    
@@ -32,7 +32,7 @@ public class MergeSort
       anArray = new int[arrayLength];
    }
 
-   
+   //method to create an array with random values from 0 to 100
    public void createRandArray()
    {
       for (int i = 0; i < arrayLength; i++)
@@ -49,31 +49,17 @@ public class MergeSort
       
       //if the array length is 1, then the division
       //of the arrays are complete, otherwise continue
-      if (otherArray.length <= 1)
+      if (otherArray.length == 1)
       {
          return otherArray;
       }
       
       //finds the middle of the array and defines 
-      // the left array 
-      int middle = otherArray.length/2;
+      //splits it into left and right arrays 
+      int middle = otherArray.length /2;
       int[] leftArray = new int[middle];
-         
-      //if the array is even, the right array can also
-      //be the same size as the left array 
-      int[] rightArray;
-      if (otherArray.length %2 == 0)
-      {
-         rightArray = new int[middle];
-      }
-      
-      //if the array is odd, the right array will
-      //gain an additional element 
-      else
-      {
-         rightArray = new int[++middle];
-      }
-      
+      int[] rightArray = new int[otherArray.length - middle];
+            
       //fills up the left array with the leftmost
       //contents of the other array
       for (int i = 0; i < middle; i++)
@@ -96,9 +82,9 @@ public class MergeSort
       
       result = merge(leftArray, rightArray);
       return result;
-
    }
    
+   //method that combines two arrays in order
    public static int[] merge(int[] leftArray, int[] rightArray)
    {
       int totalLength = leftArray.length + rightArray.length;
@@ -117,22 +103,24 @@ public class MergeSort
             //into the array, otherwise, put the right element
             if (leftArray[leftPointer] <= rightArray[rightPointer])
             {
-               result[resultPointer++] = leftArray[leftPointer];
+               result[resultPointer++] = leftArray[leftPointer++];
             }
             
             else
             {
-               result[resultPointer++] = rightArray[rightPointer];
+               result[resultPointer++] = rightArray[rightPointer++];
             }
          }
          
          //if the right array has no more elements,
-         //add the remaining elements in the left
+         //add the remaining elements from the left
          else if (leftPointer < leftArray.length)
          {
             result[resultPointer++] = leftArray[leftPointer++];
          }
          
+         //if the left array has no more elements,
+         //add the remaining elements from the right
          else if (rightPointer < rightArray.length)
          {
             result[resultPointer++] = rightArray[rightPointer++];
