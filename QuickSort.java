@@ -22,7 +22,7 @@ public class QuickSort
       System.out.println("Random Array: " + Arrays.toString(QuickSort.anArray));
       
       //uses quicksort to sort the array and prints it out
-      sortArray.quickSort(0, num -1);
+      sortArray.quickSort(0, --num);
       System.out.println("After Sorting: " + Arrays.toString(QuickSort.anArray));
    }
       
