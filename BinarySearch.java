@@ -25,6 +25,13 @@ public class BinarySearch
       //uses bubblesort to sort the array and prints it out
       sortArray.bubbleSort(anArray);
       System.out.println("After Sorting: " + Arrays.toString(BinarySearch.anArray));
+      System.out.println();
+      
+      //takes input to find "wutNum" in the sorted array
+      Scanner input2 = new Scanner(System.in);
+      System.out.println( "What number would you like to find?");
+      int wutNum = input2.nextInt();
+      sortArray.binarySearch(wutNum);
       
    }
    
@@ -53,40 +60,57 @@ public class BinarySearch
  
    public int[] bubbleSort(int[] leArray)
    {
-      for (int i = leArray.length -1; i > 0; i--)
+      //goes through the array starting from the highest index
+      for (int i = leArray.length -1; i > 1; i--)
       {
+         //goes through the array starting from the lowest index
          for (int n = 0; n < i; n++)
          {
-            if (leArray[n] > leArray[n+1])
+            //switches the place of two integers if the first is larger
+            if (leArray[n] > leArray[n +1])
             {
-               switchVals(leArray[n], leArray[n+1]);
-            }
-            
+               switchVals(n, n +1);
+            }     
          }
       }
       return leArray;
-   }
+    }
 
-   public static int binarySearch(int findNum)
+   //method to use binary search to look for the 
+   //index of a desired integer
+   public void binarySearch(int findNum)
    {
       int left = 0;
       int right = anArray.length -1;
-      int middle = (right - left) /2;
       
-      if (findNum > middle)
+      //keeps searching until the index is found
+      while (left <= right)
       {
-         left = middle +1;
-      }
+         //cuts the array in half with each iteration
+         int middle = (right + left) /2;
       
-      else if (findNum < middle)
-      {
-         right = middle -1;
-      }
+         //if the middle is less than the number,
+         //the search cuts out the lower half
+         if (anArray[middle] < findNum)
+         {
+            left = middle +1;
+         }
+         
+         //if the middle is greater than the number,
+         //the search cuts out the upper half
+         else if (anArray[middle] > findNum)
+         {
+            right = middle -1;
+         }
       
-      else
-      {
-         return middle;
-      }
-      return middle;
-   } 
+         /*once this is reached, the number is found to be
+           at index "middle" and left is made greater
+           than the right to stop the search*/
+         else
+         {
+            left = right +1;
+            System.out.println("The number " + findNum + " is located at the array index of " + middle);
+         }
+      }           
+    }
 }
