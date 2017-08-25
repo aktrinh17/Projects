@@ -62,18 +62,31 @@ public class BinarySearch
                switchVals(leArray[n], leArray[n+1]);
             }
             
-            else
-            {
-            
-            }
          }
       }
       return leArray;
    }
 
-  /* public static int binarySearch(int findNum)
+   public static int binarySearch(int findNum)
    {
-   
-   } */
-
+      int left = 0;
+      int right = anArray.length -1;
+      int middle = (right - left) /2;
+      
+      if (findNum > middle)
+      {
+         left = middle +1;
+      }
+      
+      else if (findNum < middle)
+      {
+         right = middle -1;
+      }
+      
+      else
+      {
+         return middle;
+      }
+      return middle;
+   } 
 }
