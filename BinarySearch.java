@@ -1,3 +1,5 @@
+//Uses BubbleSort to sort an array 
+//then uses a binary search to find a number
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -20,6 +22,10 @@ public class BinarySearch
       sortArray.createRandArray();
       System.out.println("Random Array: " + Arrays.toString(BinarySearch.anArray));
       
+      //uses bubblesort to sort the array and prints it out
+      sortArray.bubbleSort(anArray);
+      System.out.println("After Sorting: " + Arrays.toString(BinarySearch.anArray));
+      
    }
    
    BinarySearch(int currArraySize) 
@@ -37,14 +43,37 @@ public class BinarySearch
       } 
    }
    
-   public static int[] bubbleSort(int[] anArray)
+   //method to switch the position of two integers
+   public void switchVals(int posOne, int posTwo) 
    {
-   
+      int temp = anArray[posOne];
+      anArray[posOne] = anArray[posTwo];
+      anArray[posTwo] = temp;
+   }
+ 
+   public int[] bubbleSort(int[] leArray)
+   {
+      for (int i = leArray.length -1; i > 0; i--)
+      {
+         for (int n = 0; n < i; n++)
+         {
+            if (leArray[n] > leArray[n+1])
+            {
+               switchVals(leArray[n], leArray[n+1]);
+            }
+            
+            else
+            {
+            
+            }
+         }
+      }
+      return leArray;
    }
 
-   public static int binarySearch(int findNum)
+  /* public static int binarySearch(int findNum)
    {
    
-   } 
+   } */
 
 }
