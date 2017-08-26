@@ -41,7 +41,7 @@ public class BinarySearch
       anArray = new int[arrayLength];
    }
    
-    //method to create an array with random values from 0 to 100 
+   //method to create an array with random values from 0 to 100 
    public void createRandArray()  
    {
       for (int i = 0; i < arrayLength; i++)
@@ -74,7 +74,7 @@ public class BinarySearch
          }
       }
       return leArray;
-    }
+   }
 
    //method to use binary search to look for the 
    //index of a desired integer
@@ -82,7 +82,7 @@ public class BinarySearch
    {
       int left = 0;
       int right = anArray.length -1;
-      int notFound = 1;
+      boolean notFound = true;
       
       //keeps searching until the index is found
       while (left <= right)
@@ -104,21 +104,20 @@ public class BinarySearch
             right = middle -1;
          }
          
-          /*once this is reached, the number is found to be
+         /*once this is reached, the number is found to be
            at index "middle", left is made greater than the 
            right to stop the search, and "notFound" is incremented
-           to avoid the trigger below
-           */
+           to avoid the trigger below*/   
          else
          {
             left = right +1;
-            notFound++;
+            notFound = false;
             System.out.println("The number " + findNum + " is located at the array index of " + middle);
          }  
       }
       
       //this is only triggered if no number is found
-      if (notFound == 1)
+      if (notFound == true)
       {
          System.out.println("The number " + findNum + " was not found in the array");
       }
