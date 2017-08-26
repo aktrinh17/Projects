@@ -89,7 +89,7 @@ public class QuickSort
          
          /*if a number on the left side is found to be
            greater than a number on the right side,
-           the points will stop and switch the two */
+           the points will stop and switch the two*/
          if (leftPoint >= rightPoint)
          {
             break;
