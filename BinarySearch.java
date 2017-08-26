@@ -29,7 +29,7 @@ public class BinarySearch
       
       //takes input to find "wutNum" in the sorted array
       Scanner input2 = new Scanner(System.in);
-      System.out.println( "What number would you like to find?");
+      System.out.println( "What number would you like to find in the array?");
       int wutNum = input2.nextInt();
       sortArray.binarySearch(wutNum);
       
@@ -82,6 +82,7 @@ public class BinarySearch
    {
       int left = 0;
       int right = anArray.length -1;
+      int notFound = 1;
       
       //keeps searching until the index is found
       while (left <= right)
@@ -102,15 +103,24 @@ public class BinarySearch
          {
             right = middle -1;
          }
-      
-         /*once this is reached, the number is found to be
-           at index "middle" and left is made greater
-           than the right to stop the search*/
+         
+          /*once this is reached, the number is found to be
+           at index "middle", left is made greater than the 
+           right to stop the search, and "notFound" is incremented
+           to avoid the trigger below
+           */
          else
          {
             left = right +1;
+            notFound++;
             System.out.println("The number " + findNum + " is located at the array index of " + middle);
-         }
-      }           
-    }
+         }  
+      }
+      
+      //this is only triggered if no number is found
+      if (notFound == 1)
+      {
+         System.out.println("The number " + findNum + " was not found in the array");
+      }
+   }
 }
