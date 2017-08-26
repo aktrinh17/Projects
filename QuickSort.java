@@ -61,13 +61,15 @@ public class QuickSort
       //through recursive means
       else
       {
+         //The pivot point must be an index within the array
+         //In this case, the right end is chosen 
          int pivotP = anArray[rightP];
          int pivotPosition = partition(leftP, rightP, pivotP);
          
          //goes through again to sort the left side of the array
          quickSort(leftP, pivotPosition -1);
          
-         //goes throught again to sort the right side of the array
+         //goes through again to sort the right side of the array
          quickSort(pivotPosition +1, rightP);
       }      
    }
