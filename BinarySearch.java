@@ -116,7 +116,7 @@ public class BinarySearch
       }
       
       //this is only triggered if no number is found
-      if (notFound == true)
+      if (notFound)
       {
          System.out.println("The number " + findNum + " was not found in the array");
       }
