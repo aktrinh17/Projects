@@ -105,8 +105,7 @@ public class BinarySearch
          }
          
          /*once this is reached, the number is found to be
-           at index "middle", left is made greater than the 
-           right to stop the search, and "notFound" is incremented
+           at index "middle" and "notFound" is made false
            to avoid the trigger below*/   
          else
          {
