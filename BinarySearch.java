@@ -110,9 +110,9 @@ public class BinarySearch
            to avoid the trigger below*/   
          else
          {
-            left = right +1;
             notFound = false;
             System.out.println("The number " + findNum + " is located at the array index of " + middle);
+            break;
          }  
       }
       
