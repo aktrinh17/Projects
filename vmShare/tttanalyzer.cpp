@@ -12,13 +12,13 @@ using std::vector;
 
 int xWins(string tttboard)
 {
-	int x;
+	int x = 0;
 	// checks for row wins
-	if (tttboard.substr(0,2) == "xxx")
+	if (tttboard.substr(0,3) == "xxx")
 		x++;
-	if (tttboard.substr(3,5) == "xxx")
+	if (tttboard.substr(3,6) == "xxx")
 		x++;
-	if (tttboard.substr(6,8) == "xxx")
+	if ((tttboard + "").substr(6,9) == "xxx")
 		x++;
 	// checks for column wins
 	if (tttboard[0] == 'x' && tttboard[3] == 'x' && tttboard[6] == 'x')
@@ -38,13 +38,13 @@ int xWins(string tttboard)
 
 int oWins(string tttboard)
 {
-	int o;
+	int o = 0;
 	// checks for row wins 
-	if (tttboard.substr(0,2) == "ooo")
+	if (tttboard.substr(0,3) == "ooo")
 		o++;
-	if (tttboard.substr(3,5) == "ooo")
+	if (tttboard.substr(3,6) == "ooo")
 		o++;
-	if (tttboard.substr(6,8) == "ooo")
+	if ((tttboard + "x").substr(6,9) == "ooo")
 		o++;
 	// checks for column wins
 	if (tttboard[0] == 'o' && tttboard[3] == 'o' && tttboard[6] == 'o')
@@ -63,7 +63,7 @@ int oWins(string tttboard)
 
 int numMoves(string tttboard, char choice)
 {
-	int count;
+	int count = 0;
 	for (int i = 0; i < tttboard.length(); i++)
 	{
 		if (tttboard[i] == choice)
@@ -76,21 +76,23 @@ char tttresult(string tttboard, bool * perror)
 {
 	// checks for invalid boards
 	if (tttboard.length() != 9)
-		*perror = 1;
-	for (int i = 0; i <= 9; i++)
+		*perror = true;
+	for (int i = 0; i < 9; i++)
 	{
 		if (tttboard[i] != '#' && tttboard[i] != 'x' && tttboard[i] != 'o')
-			*perror = 1;
+			*perror = true;
 	}
+
 	// checks for more than one line of winning
 	if (xWins(tttboard) > 1)
 		return 'i';
 	if (oWins(tttboard) > 1)
 		return 'i';
+
 	// checks for a move out of order 
-	if (numMoves(tttboard, 'o') > numMoves(tttboard, 'x'))
+	if ((numMoves(tttboard, 'o')) > (numMoves(tttboard, 'x')))
 		return 'i';
-	if (numMoves(tttboard, 'x') > (numMoves(tttboard, 'o')+1))
+	if ((numMoves(tttboard, 'x')) > ((numMoves(tttboard, 'o'))+1))
 		return 'i';
 
 
@@ -99,13 +101,13 @@ char tttresult(string tttboard, bool * perror)
 	{
 		return 'x';
 	}
-	else if (xWins(tttboard) == 0 && oWins(tttboard) == 1)
+	if (xWins(tttboard) == 0 && oWins(tttboard) == 1)
 	{
 		return 'o';
 	}
 
 	// returns for tie game if all spaces are filled and there are no winners
-	if (!tttboard.find('#'))
+	if ((tttboard.find('#')) == -1)  // triggered if # is not found
 	{
 		if (xWins(tttboard) == 0 && oWins(tttboard) == 0)
 			return 't';
@@ -144,45 +146,63 @@ char tttresult(vector<Move> board) {
   return 'i';
 }
 */
+
+// converts the decimal number into base 3
+  // then converts the base 3 number into a ttt format
+  // and adds it to the vector boards
 vector<string> get_all_boards() {
   vector<string> boards;
   string tttcombo;
-  string zero = "0";
   char result;
   int x, o, t, i, c;
   bool perror;
 
-  // converts the decimal number into base 3
-  // then converts the base 3 number into a ttt format
-  // and adds it to the vector boards
-  for (int i = 0; i <= 19682; i++)
+  for (int i = 0; i < 19683; i++)
   {
   	tttcombo = convertbase(std::to_string(i), 10, 3);
-  	while (tttcombo.length() != 9)
+  	// pads the front of the number with 0s until it reaches 9 digits
+  	while (tttcombo.length() < 9)
   	{
-  		tttcombo = zero + tttcombo;
+  		tttcombo = '0' + tttcombo;
   	}
+
   	// converts the base 3 number into ttt format
-  	for (int j = 0; j <= 9; j++)
+  	for (int j = 0; j < 9; j++)
   	{
   		if (tttcombo[j] == '0')
+  		{
   			tttcombo[j] = '#';
+  		}
   		else if (tttcombo[j] == '1')
+  		{
   			tttcombo[j] = 'x';
+  		}
   		else if (tttcombo[j] == '2')
+  		{
   			tttcombo[j] = 'o';
+  		}
   	}
   	result = tttresult(tttcombo, &perror);
   	if (result == 'x')
+  	{
   		x++;
+  	}
   	else if (result == 'o')
+  	{
   		o++;
+  	}
   	else if (result == 't')
+  	{
   		t++;
+  	}
   	else if (result == 'i')
+  	{
   		i++;
+  	}
   	else if (result == 'c')
+  	{
   		c++; 
+  	}
   	boards.push_back(tttcombo);
   }
   printf(" x: %d\n o: %d\n t:%d\n i:%d\n c: %d\n", x, o, t, i, c);
@@ -192,5 +212,11 @@ vector<string> get_all_boards() {
 // MAIN
 int main() {
 	get_all_boards();
+	char result;
+	bool perror;
+	result = tttresult("########x", &perror);
+	int debug = 0;
+	debug = oWins("ooooooooo");
+	cout << debug;
   return 0;
 }
