@@ -10,55 +10,6 @@ using std::cout;
 using std::string;
 using std::vector;
 
-int xWins(string);
-int yWins(string);
-int numMoves(string, char);
-
-char tttresult(string tttboard, bool * perror)
-{
-	// checks for invalid boards
-	if (tttboard.length() != 9)
-		*perror = 1;
-	for (int i = 0; i <= 9; i++)
-	{
-		if (tttboard[i] != '#' && tttboard[i] != 'x' && tttboard[i] != 'o')
-			*perror = 1;
-	}
-	// checks for more than one line of winning
-	if (xWins(tttboard) > 1)
-		return 'i';
-	if (yWins(tttboard) > 1)
-		return 'i';
-	// checks for a move out of order 
-	if (numMoves(tttboard, 'o') > numMoves(tttboard, 'x'))
-		return 'i';
-	if (numMoves(tttboard, 'x') > (numMoves(tttfunctions, 'o')+1))
-		return 'i';
-
-
-	// returns for valid x or o wins
-	if (xWins(tttboard) == 1 && oWins(tttboard) == 0)
-	{
-		return 'x';
-	}
-	else if (xWins(tttboard) == 0 && oWins(tttboard) == 1)
-	{
-		return 'o';
-	}
-
-	// returns for tie game if all spaces are filled and there are no winners
-	if (!tttboard.find('#'))
-	{
-		if (xWins(tttboard) == 0 && oWins(tttboard) == 0)
-			return 't';
-	} 
-	// if there are empty spaces found, then the game continues
-	else
-	{
-		return 'c';
-	}
-}
-
 int xWins(string tttboard)
 {
 	int x;
@@ -121,6 +72,51 @@ int numMoves(string tttboard, char choice)
 	return count;
 }
 
+char tttresult(string tttboard, bool * perror)
+{
+	// checks for invalid boards
+	if (tttboard.length() != 9)
+		*perror = 1;
+	for (int i = 0; i <= 9; i++)
+	{
+		if (tttboard[i] != '#' && tttboard[i] != 'x' && tttboard[i] != 'o')
+			*perror = 1;
+	}
+	// checks for more than one line of winning
+	if (xWins(tttboard) > 1)
+		return 'i';
+	if (oWins(tttboard) > 1)
+		return 'i';
+	// checks for a move out of order 
+	if (numMoves(tttboard, 'o') > numMoves(tttboard, 'x'))
+		return 'i';
+	if (numMoves(tttboard, 'x') > (numMoves(tttboard, 'o')+1))
+		return 'i';
+
+
+	// returns for valid x or o wins
+	if (xWins(tttboard) == 1 && oWins(tttboard) == 0)
+	{
+		return 'x';
+	}
+	else if (xWins(tttboard) == 0 && oWins(tttboard) == 1)
+	{
+		return 'o';
+	}
+
+	// returns for tie game if all spaces are filled and there are no winners
+	if (!tttboard.find('#'))
+	{
+		if (xWins(tttboard) == 0 && oWins(tttboard) == 0)
+			return 't';
+	} 
+	// if there are empty spaces found, then the game continues
+	else
+	{
+		return 'c';
+	}
+}
+
 //converts a string of numbers from a base to another base
 string convertbase(const string& numstr, const int frombase, const int tobase) {
   string newBase = "";
@@ -143,10 +139,11 @@ string convertbase(const string& numstr, const int frombase, const int tobase) {
   return newBase;
 }
 
+/*
 char tttresult(vector<Move> board) {
   return 'i';
 }
-
+*/
 vector<string> get_all_boards() {
   vector<string> boards;
   string tttcombo;
@@ -160,7 +157,7 @@ vector<string> get_all_boards() {
   // and adds it to the vector boards
   for (int i = 0; i <= 19682; i++)
   {
-  	tttcombo = convertbase(std::tostring(i), 10, 3);
+  	tttcombo = convertbase(std::to_string(i), 10, 3);
   	while (tttcombo.length() != 9)
   	{
   		tttcombo = zero + tttcombo;
@@ -168,14 +165,14 @@ vector<string> get_all_boards() {
   	// converts the base 3 number into ttt format
   	for (int j = 0; j <= 9; j++)
   	{
-  		if (tttcombo[j] == "0")
-  			tttcombo[j] = "#";
-  		else if (tttcombo[j] == "1")
-  			tttcombo[j] = "x";
-  		else if (tttcombo[j] == "2")
-  			tttcombo[j] = "o";
+  		if (tttcombo[j] == '0')
+  			tttcombo[j] = '#';
+  		else if (tttcombo[j] == '1')
+  			tttcombo[j] = 'x';
+  		else if (tttcombo[j] == '2')
+  			tttcombo[j] = 'o';
   	}
-  	result = tttresult(tttanalyzer, &perror);
+  	result = tttresult(tttcombo, &perror);
   	if (result == 'x')
   		x++;
   	else if (result == 'o')
@@ -188,11 +185,12 @@ vector<string> get_all_boards() {
   		c++; 
   	boards.push_back(tttcombo);
   }
-  printf("%d, %d, %d, %d, %d", x, o, t, i, c);
+  printf(" x: %d\n o: %d\n t:%d\n i:%d\n c: %d\n", x, o, t, i, c);
   return boards;
 }
 
 // MAIN
 int main() {
+	get_all_boards();
   return 0;
 }
