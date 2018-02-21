@@ -14,11 +14,11 @@ int xWins(string tttboard)
 {
 	int x = 0;
 	// checks for row wins
-	if (tttboard.substr(0,3) == "xxx")
+	if (tttboard[0] == 'x' && tttboard[1] == 'x' && tttboard[2] == 'x')
 		x++;
-	if (tttboard.substr(3,6) == "xxx")
+	if (tttboard[3] == 'x' && tttboard[4] == 'x' && tttboard[5] == 'x')
 		x++;
-	if ((tttboard + "").substr(6,9) == "xxx")
+	if (tttboard[6] == 'x' && tttboard[7] == 'x' && tttboard[8] == 'x')
 		x++;
 	// checks for column wins
 	if (tttboard[0] == 'x' && tttboard[3] == 'x' && tttboard[6] == 'x')
@@ -40,11 +40,11 @@ int oWins(string tttboard)
 {
 	int o = 0;
 	// checks for row wins 
-	if (tttboard.substr(0,3) == "ooo")
+	if (tttboard[0] == 'o' && tttboard[1] == 'o' && tttboard[2] == 'o')
 		o++;
-	if (tttboard.substr(3,6) == "ooo")
+	if (tttboard[3] == 'o' && tttboard[4] == 'o' && tttboard[5] == 'o')
 		o++;
-	if ((tttboard + "x").substr(6,9) == "ooo")
+	if (tttboard[6] == 'o' && tttboard[7] == 'o' && tttboard[8] == 'o')
 		o++;
 	// checks for column wins
 	if (tttboard[0] == 'o' && tttboard[3] == 'o' && tttboard[6] == 'o')
@@ -216,7 +216,7 @@ int main() {
 	bool perror;
 	result = tttresult("########x", &perror);
 	int debug = 0;
-	debug = oWins("ooooooooo");
+	debug = xWins("xxxxxxxxx");
 	cout << debug;
   return 0;
 }
