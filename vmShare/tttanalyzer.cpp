@@ -83,9 +83,13 @@ char tttresult(string tttboard, bool * perror)
 			*perror = true;
 	}
 
-	// checks for more than one line of winning
+	// checks for more than one line of winning or for a valid double win
 	if (xWins(tttboard) > 1)
-		return 'i';
+		if (xWins(tttboard) == 2 && numMoves(tttboard, 'x') == 5)
+			return 'x';
+		else
+			return 'i';
+
 	if (oWins(tttboard) > 1)
 		return 'i';
 
@@ -211,12 +215,12 @@ vector<string> get_all_boards() {
 }
 
 // MAIN
+
 int main() {
 	get_all_boards();
 	char result;
 	bool perror;
 	int x = 0;
 	result = tttresult("o#x#xx#ox", &perror);
-	cout << result;
   return 0;
 }
