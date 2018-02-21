@@ -5,7 +5,6 @@
 #include <vector>
 #include <map>
 
-
 using std::cout;
 using std::string;
 using std::vector;
@@ -77,21 +76,11 @@ char tttresult(string tttboard, bool * perror)
 	// checks for invalid boards
 	if (tttboard.length() != 9)
 		*perror = true;
-	for (int i = 0; i < 9; i++)
+	for (int j = 0; j < 9; j++)
 	{
-		if (tttboard[i] != '#' && tttboard[i] != 'x' && tttboard[i] != 'o')
+		if (tttboard[j] != '#' && tttboard[j] != 'x' && tttboard[j] != 'o')
 			*perror = true;
 	}
-
-	// checks for more than one line of winning or for a valid double win
-	if (xWins(tttboard) > 1)
-		if (xWins(tttboard) == 2 && numMoves(tttboard, 'x') == 5)
-			return 'x';
-		else
-			return 'i';
-
-	if (oWins(tttboard) > 1)
-		return 'i';
 
 	// checks for a move out of order 
 	if ((numMoves(tttboard, 'o')) > (numMoves(tttboard, 'x')))
@@ -99,16 +88,35 @@ char tttresult(string tttboard, bool * perror)
 	if ((numMoves(tttboard, 'x')) > (numMoves(tttboard, 'o') + 1))
 		return 'i';
 
+	// there cant be more than 1 winner
+	if (xWins(tttboard) == 1 && oWins(tttboard) == 1)
+		return 'i';
+
+	if (oWins(tttboard) > 1)
+		return 'i';
+
+	// checks for more than one line of winning or for a valid double win
+	if (xWins(tttboard) > 1)
+	{
+		if (xWins(tttboard) == 2 && numMoves(tttboard, 'x') == 5)
+			return 'x';
+		else
+			return 'i';
+	}
 
 	// returns for valid x or o wins
 	if (xWins(tttboard) == 1 && oWins(tttboard) == 0)
-	{
-		return 'x';
-	}
+		if (numMoves(tttboard, 'x') != numMoves(tttboard, 'o') + 1) {
+			return 'i';
+		} else {
+			return 'x';
+		}
 	if (xWins(tttboard) == 0 && oWins(tttboard) == 1)
-	{
-		return 'o';
-	}
+		if (numMoves(tttboard, 'x') != numMoves(tttboard, 'o')) {
+			return 'i';
+		} else {
+			return 'o';
+		}
 
 	// returns for tie game if all spaces are filled and there are no winners
 	if ((tttboard.find('#')) == -1)  // triggered if # is not found
@@ -218,9 +226,5 @@ vector<string> get_all_boards() {
 
 int main() {
 	get_all_boards();
-	char result;
-	bool perror;
-	int x = 0;
-	result = tttresult("o#x#xx#ox", &perror);
   return 0;
 }
