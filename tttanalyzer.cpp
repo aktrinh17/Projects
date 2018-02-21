@@ -147,33 +147,32 @@ char tttresult(vector<Move> board) {
   return 'i';
 }
 
-string charReplace(string orig, string remove, string change)
-{
-	int position;
-	do
-	{
-		position = orig.find(remove);
-		if (position != -1)
-			orig.replace(position, remove.length(), change))
-	} while (position != -1);
-
-	return orig;
-}
-
 vector<string> get_all_boards() {
   vector<string> boards;
   string tttcombo;
+  string zero = "0";
 
   // converts the decimal number into base 3
   // then converts the base 3 number into a ttt format
   // and adds it to the vector boards
   for (int i = 0; i <= 19682; i++)
   {
-  	tttcombo = convertbase(i, 10, 3);
-  	charReplace(tttcombo, '0', '#');
-  	charReplace(tttcombo, '1', 'x');
-  	charReplace(tttcombo, '2', 'o');
-  	boards.push_back(tttcombo);
+  	tttcombo = convertbase(std::tostring(i), 10, 3);
+  	while (tttcombo.length() != 9)
+  	{
+  		tttcombo = zero + tttcombo;
+  	}
+  	// converts the base 3 number into ttt format
+  	for (int j = 0; j <= 9; j++)
+  	{
+  		if (tttcombo[j] == "0")
+  			tttcombo[j] = "#";
+  		else if (tttcombo[j] == "1")
+  			tttcombo[j] = "x";
+  		else if (tttcombo[j] == "2")
+  			tttcombo[j] = "o";
+  	}
+  	boards.push_back(tttcombo)
   }
 
   return boards;
