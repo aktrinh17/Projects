@@ -92,7 +92,7 @@ char tttresult(string tttboard, bool * perror)
 	// checks for a move out of order 
 	if ((numMoves(tttboard, 'o')) > (numMoves(tttboard, 'x')))
 		return 'i';
-	if ((numMoves(tttboard, 'x')) > ((numMoves(tttboard, 'o'))+1))
+	if ((numMoves(tttboard, 'x')) > (numMoves(tttboard, 'o') + 1))
 		return 'i';
 
 
@@ -155,11 +155,12 @@ vector<string> get_all_boards() {
   string tttcombo;
   char result;
   int x, o, t, i, c;
+  x = o = t = i = c = 0;
   bool perror;
 
-  for (int i = 0; i < 19683; i++)
+  for (int loopVar = 0; loopVar < 19683; loopVar++)
   {
-  	tttcombo = convertbase(std::to_string(i), 10, 3);
+  	tttcombo = convertbase(std::to_string(loopVar), 10, 3);
   	// pads the front of the number with 0s until it reaches 9 digits
   	while (tttcombo.length() < 9)
   	{
@@ -167,7 +168,7 @@ vector<string> get_all_boards() {
   	}
 
   	// converts the base 3 number into ttt format
-  	for (int j = 0; j < 9; j++)
+  	for (int j = 0; j < tttcombo.length(); j++)
   	{
   		if (tttcombo[j] == '0')
   		{
@@ -214,9 +215,8 @@ int main() {
 	get_all_boards();
 	char result;
 	bool perror;
-	result = tttresult("########x", &perror);
-	int debug = 0;
-	debug = xWins("xxxxxxxxx");
-	cout << debug;
+	int x = 0;
+	result = tttresult("o#x#xx#ox", &perror);
+	cout << result;
   return 0;
 }
