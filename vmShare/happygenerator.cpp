@@ -6,12 +6,55 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "timer.h"
+//#include "timer.h"
+using std::string;
 // add addtional libraries if you need them
 
+// divides a number into its digits and finds its square
+int digitSquareSum(int num) {
+  int sum = 0;
+  // uses modulus to take off the ones digit and adds
+  // its square to the sum
+  // then divides by 10 to move to the next digit
+  while (num) {
+    sum += (num % 10) * (num % 10);
+    num /= 10;
+  }
+
+  return sum;
+}
+
+// converts a number form one base to another
+string convertBase(const string& numstr, const int frombase, const int tobase) {
+  string newBase = "";
+  int distance = 0;
+  int baseMulti = 1;
+  // loops from the end of the string to the beginning
+  for (int i = numstr.length() - 1; i >= 0; i--) {
+    distance = distance + (numstr[i] - '0') * baseMulti;
+    baseMulti = baseMulti * frombase;
+  }
+
+  while (distance > 0) {
+    string pad = "";
+    int addVar = (distance % tobase) + '0';
+    distance = distance / tobase;
+    pad = pad + (static_cast<char>(addVar));
+    newBase.insert(0, pad);
+  }
+
+  return newBase;
+}
+
+// finds all happy numbers up to and including last in a certain base
 std::vector<int> find_happy_up_to(int last, const int base = 10)
 {
-
+  std::vector<int> happyNums;
+  for (int i = 1; i <= last; i++)
+  {
+    if (is_happy(i, base))
+      happyNums.push_back(i);
+  }
 }
 
 std::vector<int> happiness_cycle(int number, int base = 10)
@@ -19,9 +62,34 @@ std::vector<int> happiness_cycle(int number, int base = 10)
 
 }
 
+// finds if a number is happy in a certain base
 bool is_happy(int number, int base = 10)
 {
-  
+  string num = convertBase(std::to_string(number), 10, base);
+  number = std::stoi(num);
+  int checkNext = number;
+  int checkNextNext = number;
+
+    // checks for when the numbers meet at 1 or reach 4
+  do 
+  {
+    checkNext = digitSquareSum(checkNext);
+    checkNextNext = digitSquareSum(digitSquareSum(checkNextNext));
+    if (checkNextNext == 4) 
+    {
+      break;
+    }
+  } while (checkNext != checkNextNext);
+
+    // if the number is equal to 1 it means the number is happy
+  if (checkNextNext == 1) 
+  {
+    return true;
+  } 
+  else 
+  { 
+    return false;
+  }
 }
 
 struct HappyGenerator {
@@ -30,165 +98,12 @@ struct HappyGenerator {
   bool is_happy(int number, int base = 10) {}
 };
 
-
-
-
-// MAIN   leave this line and all below as is
-//        when submitting
-
-
-const int SLIMIT = 4'000'000;
-
-void standard_tests();
-void interactive_main();
-
-int main(int argc, const char **argv) {
-  if (argc > 1)
-    interactive_main();
+main ()
+{
+  bool x = is_happy(10,2);
+  if (x == true)
+    std::cout << "yes";
   else
-    standard_tests();
+    std::cout << "no";
   return 0;
-}
-
-void standard_tests() {
-  double speed = computer_speed();
-  std::cerr << "Your computers speed relative to server: " << speed << "\n";
-
-  Timer tall, t0("setup"), t1("all100");
-  Timer t3("million1"), t4("million2");
-
-
-  std::vector<std::pair<int, int>> res;
-
-  t0.start();
-  HappyGenerator h;
-  t0.stop();
-
-  // Test case definitions.
-  std::vector<int> happy_tests_one{1, 4, 7, 145, 91, 31435135};
-  std::vector<std::vector<int>> happy_tests_two{{14500, 10}, {2, 3},
-    {255, 2}, {255, 4}, {998, 998}, {4, 10}, {7, 3},
-    {41, 100}, {234, 100}, {124, 100}, {22357, 1000}, {1049, 1000}};
-  std::vector<std::vector<int>> find_upto_tests_two{{100, 3},
-    {1000, 11}, {20, 2}};
-  std::vector<int> find_upto_tests_one{10, 100};
-
-  std::cout << "Testing is_happy (two parameters)\n";
-  for (auto e : happy_tests_two) {
-    std::cout << "is_happy(" << e.at(0) << "," << e.at(1) << ") = ";
-    std::cout << h.is_happy(e.at(0), e.at(1)) << "\n";
-  }
-
-  std::cout << "Testing is_happy (one parameter)\n";
-  for (auto e : happy_tests_one) {
-    std::cout << "is_happy(" << e << ") = ";
-    std::cout << h.is_happy(e) << "\n";
-  }
-
-  std::cout << "Testing happiness_cycle (two parameters)\n";
-  for (auto e : happy_tests_two) {
-    std::cout << "happiness_cycle(" << e.at(0) << "," << e.at(1) << ") = ";
-    for (auto cyc_val : h.happiness_cycle(e.at(0), e.at(1)))
-      std::cout << cyc_val << " ";
-    std::cout << "\n";
-  }
-
-  std::cout << "Testing happiness_cycle (one parameter)\n";
-  for (auto e : happy_tests_one) {
-    std::cout << "happiness_cycle(" << e << ") = ";
-    for (auto cyc_val : h.happiness_cycle(e))
-      std::cout << cyc_val << " ";
-    std::cout << "\n";
-  }
-
-  std::cout << "Testing find_happy_up_to (two parameters)\n";
-  for (auto e : find_upto_tests_two) {
-    std::cout << "find_happy_up_to(" << e.at(0) << "," << e.at(1) << ") = ";
-    for (auto happyval : h.find_happy_up_to(e.at(0), e.at(1)))
-      std::cout << happyval << " ";
-    std::cout << "\n";
-  }
-
-
-  std::cout << "Testing find_happy_up_to (one parameter)\n";
-  for (auto e : find_upto_tests_one) {
-    std::cout << "find_happy_up_to(" << e << ") = ";
-    for (auto happynum : h.find_happy_up_to(e))
-      std::cout << happynum << " ";
-    std::cout << "\n";
-  }
-
-
-  std::cout << "Finding the happiest bases\n";
-
-  t1.start();
-  for (int i = 2; i < 100; i++) {
-    auto v = h.find_happy_up_to(100, i);
-    res.push_back(std::make_pair(v.size(), i));
-  }
-  t1.stop();
-
-  std::sort(res.begin(), res.end());
-
-  std::cout << "The ten happiest bases (for 1 to 100) are \n";
-  for (auto it = res.rbegin(); it != res.rbegin() + 10 ; it++)
-    std::cout << "base "  << it -> second << " has "
-              << it -> first << " happy\n";
-
-
-  t3.start();
-  int count1 = h.find_happy_up_to(SLIMIT).size();
-  t3.stop();
-
-  t4.start();
-  int count2 = h.find_happy_up_to(SLIMIT).size();
-  t4.stop();
-
-
-  std::cout << "In first " << SLIMIT << " "
-            << count1 << " are happy (base 10)\n";
-
-  std::cout << "In first " << SLIMIT << " "
-            << count2 << " are happy (base 10)\n";
-}
-
-
-void interactive_main() {
-  std::string asktype;
-  int number, parameters, base;
-  HappyGenerator h;
-
-  while (true) {
-    std::cin >> asktype;
-    if (asktype == "quit") break;
-    std::cin >> parameters >> number;
-    if (parameters > 1) std::cin >> base;
-    if (asktype == "i" and parameters == 2) {
-      std::cout << "is_happy(" << number << "," << base << ") = ";
-      std::cout << h.is_happy(number, base) << "\n";
-    } else if (asktype == "i" and parameters == 1) {
-      std::cout << "is_happy(" << number << ") = ";
-      std::cout << h.is_happy(number) << "\n";
-    } else if (asktype == "c" and parameters == 2) {
-      std::cout << "happiness_cycle(" << number << "," << base << ") = ";
-      for (auto cyc_val : h.happiness_cycle(number, base) )
-        std::cout << cyc_val << " ";
-      std::cout << "\n";
-    } else if (asktype == "c" and parameters == 1) {
-      std::cout << "happiness_cycle(" << number << ") = ";
-      for (auto cyc_val : h.happiness_cycle(number))
-        std::cout << cyc_val << " ";
-      std::cout << "\n";
-    } else if (asktype == "f" and parameters == 2) {
-      std::cout << "find_happy_up_to(" << number << "," << base << ") = ";
-      for (auto happyval : h.find_happy_up_to(number, base))
-        std::cout << happyval << " ";
-      std::cout << "\n";
-    } else if (asktype == "f" and parameters == 1) {
-      std::cout << "find_happy_up_to(" << number << ") = ";
-      for (auto happynum : h.find_happy_up_to(number))
-        std::cout << happynum << " ";
-      std::cout << "\n";
-    }
-  }
 }
