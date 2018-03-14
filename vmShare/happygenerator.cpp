@@ -56,13 +56,18 @@ bool is_happy(int number, int base = 10)
   int checkNext = number;
 
   std::unordered_map<int, int> happyMap;
+  // Adds digitSS to map until it finds a duplicate
   do
   {
-    checkNext = digitSquareSum(checkNext);
     happyMap[checkNext] = checkNext;
+    checkNext = digitSquareSum(checkNext);
+    if (checkNext == 1)
+    {
+      return true;
+    }
   } while (happyMap.find(checkNext) == happyMap.end());
 
-  return checkNext;
+  return false;
 }
 
 // finds all happy numbers up to and including last in a certain base
@@ -71,9 +76,12 @@ std::vector<int> find_happy_up_to(int last, const int base = 10)
   std::vector<int> happyNums;
   for (int i = 1; i <= last; i++)
   {
-    if (is_happy(i, base))
+    if (is_happy(i, base)) {
       happyNums.push_back(i);
+      std::cout << i;
+    }
   }
+  return happyNums;
 }
 
 std::vector<int> happiness_cycle(int number, int base = 10)
@@ -87,9 +95,11 @@ struct HappyGenerator {
   bool is_happy(int number, int base = 10) {}
 };
 
-main ()
+// MAIN
+main()
 {
-  bool x = is_happy(10,2);
+  find_happy_up_to(10);
+  bool x = is_happy(10);
   if (x == true)
     std::cout << "yes";
   else
