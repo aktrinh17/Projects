@@ -6,6 +6,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
+#include <unordered_map>
 //#include "timer.h"
 using std::string;
 // add addtional libraries if you need them
@@ -46,6 +48,23 @@ string convertBase(const string& numstr, const int frombase, const int tobase) {
   return newBase;
 }
 
+// finds if a number is happy in a certain base
+bool is_happy(int number, int base = 10)
+{
+  string num = convertBase(std::to_string(number), 10, base);
+  number = std::stoi(num);
+  int checkNext = number;
+
+  std::unordered_map<int, int> happyMap;
+  do
+  {
+    checkNext = digitSquareSum(checkNext);
+    happyMap[checkNext] = checkNext;
+  } while (happyMap.find(checkNext) == happyMap.end());
+
+  return checkNext;
+}
+
 // finds all happy numbers up to and including last in a certain base
 std::vector<int> find_happy_up_to(int last, const int base = 10)
 {
@@ -60,36 +79,6 @@ std::vector<int> find_happy_up_to(int last, const int base = 10)
 std::vector<int> happiness_cycle(int number, int base = 10)
 {
 
-}
-
-// finds if a number is happy in a certain base
-bool is_happy(int number, int base = 10)
-{
-  string num = convertBase(std::to_string(number), 10, base);
-  number = std::stoi(num);
-  int checkNext = number;
-  int checkNextNext = number;
-
-    // checks for when the numbers meet at 1 or reach 4
-  do 
-  {
-    checkNext = digitSquareSum(checkNext);
-    checkNextNext = digitSquareSum(digitSquareSum(checkNextNext));
-    if (checkNextNext == 4) 
-    {
-      break;
-    }
-  } while (checkNext != checkNextNext);
-
-    // if the number is equal to 1 it means the number is happy
-  if (checkNextNext == 1) 
-  {
-    return true;
-  } 
-  else 
-  { 
-    return false;
-  }
 }
 
 struct HappyGenerator {
