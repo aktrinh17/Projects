@@ -59,16 +59,44 @@ std::vector<int> find_happy_up_to(int last, const int base = 10) {
   for (int i = 1; i <= last; i++) {
     if (is_happy(i, base)) {
       happyNums.push_back(i);
-      printf("%d ", i);
     }
   }
   return happyNums;
 }
 
+// Finds a cycle of happy numbers in a specific base
 std::vector<int> happiness_cycle(int number, int base = 10) {
+  int checkNext = convertbase(number, base);
+  std::vector<int> numCycle;
+  std::unordered_map<int, int> happyMap;
 
+  // Adds digitSS to map until it finds a cycle
+  do {
+    happyMap[checkNext] = checkNext;
+    checkNext = digitSquareSum(checkNext);
+    // returns 1 if a happy number is found
+    if (checkNext == 1) {
+      numCycle.push_back(checkNext);
+      return numCycle;
+    }
+  } while (happyMap.find(checkNext) == happyMap.end());
+  
+  numCycle.push_back(checkNext);
+  int startOfCycle = checkNext;
 
+  // loops until the first number is encountered again
+  // meaning that the cycle has ended
+  while (digitSquareSum(checkNext) != startOfCycle)
+  {
+    checkNext = digitSquareSum(checkNext);
+    numCycle.push_back(checkNext);
+  }
 
+  for (int i = 0; i < numCycle.size(); i++)
+  {
+    std::cout << numCycle[i] << ' ';
+  }
+  return numCycle;
 }
 
 struct HappyGenerator {
@@ -79,10 +107,16 @@ struct HappyGenerator {
 
 // MAIN
 main() {
-  bool x = is_happy(31435135);
+
+
+  happiness_cycle(41,100);
+  /*
+  bool x = is_happy(12,3);
   if (x == true)
     std::cout << "1\n";
   else
     std::cout << "0\n";
+
+    */
   return 0;
 }
