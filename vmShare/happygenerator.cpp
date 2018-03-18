@@ -5,51 +5,33 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-//#include "timer.h"
+#include "timer.h"
 using std::string;
 
 // divides a number into its digits and finds its square
-int digitSquareSum(int num) {
+int digitSquareSum(int num, const int base = 10) {
   int sum = 0;
-  // uses modulus to take off the ones digit and adds
-  // its square to the sum
-  // then divides by 10 to move to the next digit
   while (num) {
-    sum += (num % 10) * (num % 10);
-    num /= 10;
-  }
-
-  return sum;
-}
-
-// converts a number from one base to another
-int convertbase(int num, const int base) {
-  int newNum = 0;
-  int place = 1;
-  int digit;
-  while (num > 0) {
-    digit = num % base;
-    newNum += digit * place;
-    place *= 10;
+    sum += (num % base) * (num % base);
     num /= base;
   }
-  return newNum;
+  return sum;
 }
 
 // finds if a number is happy in a certain base
 bool is_happy(int number, int base = 10) {
-  int checkNext = convertbase(number, base);
+  // converts the new base in vector form to int 
 
   std::unordered_map<int, int> happyMap;
   // Adds digitSS to map until it finds a duplicate
   do {
-    happyMap[checkNext] = checkNext;
-    checkNext = digitSquareSum(checkNext);
+    happyMap[number] = number;
+    number = digitSquareSum(number, base);
 
-    if (checkNext == 1) 
+    if (number == 1) 
       return true;
 
-  } while (happyMap.find(checkNext) == happyMap.end());
+  } while (happyMap.find(number) == happyMap.end());
   return false;
 }
 
@@ -59,43 +41,42 @@ std::vector<int> find_happy_up_to(int last, const int base = 10) {
   for (int i = 1; i <= last; i++) {
     if (is_happy(i, base)) {
       happyNums.push_back(i);
+      std::cout << i << ' ';
     }
   }
   return happyNums;
 }
 
-// Finds a cycle of happy numbers in a specific base
 std::vector<int> happiness_cycle(int number, int base = 10) {
-  int checkNext = convertbase(number, base);
   std::vector<int> numCycle;
   std::unordered_map<int, int> happyMap;
 
   // Adds digitSS to map until it finds a cycle
   do {
-    happyMap[checkNext] = checkNext;
-    checkNext = digitSquareSum(checkNext);
+    happyMap[number] = number;
+    number = digitSquareSum(number, base);
     // returns 1 if a happy number is found
-    if (checkNext == 1) {
-      numCycle.push_back(checkNext);
+    if (number == 1) {
+      numCycle.push_back(number);
       return numCycle;
     }
-  } while (happyMap.find(checkNext) == happyMap.end());
+  } while (happyMap.find(number) == happyMap.end());
   
-  numCycle.push_back(checkNext);
-  int startOfCycle = checkNext;
+  numCycle.push_back(number);
+  int startOfCycle = number;
 
   // loops until the first number is encountered again
   // meaning that the cycle has ended
-  while (digitSquareSum(checkNext) != startOfCycle)
+  while (digitSquareSum(number, base) != startOfCycle)
   {
-    checkNext = digitSquareSum(checkNext);
-    numCycle.push_back(checkNext);
+    number = digitSquareSum(number, base);
+    numCycle.push_back(number);
   }
 
-  for (int i = 0; i < numCycle.size(); i++)
+ /* for (int i = 0; i < numCycle.size(); i++)
   {
-    std::cout << numCycle[i] << ' ';
-  }
+   std::cout << numCycle[i] << ' ';
+  }*/
   return numCycle;
 }
 
@@ -105,18 +86,6 @@ struct HappyGenerator {
   bool is_happy(int number, int base = 10) {}
 };
 
-// MAIN
-main() {
-
-
-  happiness_cycle(41,100);
-  /*
-  bool x = is_happy(12,3);
-  if (x == true)
-    std::cout << "1\n";
-  else
-    std::cout << "0\n";
-
-    */
+int main() {
   return 0;
 }
