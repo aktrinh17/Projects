@@ -4,7 +4,6 @@
 #include <iostream>
 #include <set>
 #include <string>
-#include <tuple>
 #include <unordered_map>
 #include <vector>
 #include "timer.h"
@@ -12,7 +11,7 @@
 // lookup for optimization
 std::unordered_map<int, std::vector<int>> Happies;
 
-std::unordered_map<int, int, std::vector<int>> foundHappy;
+//std::unordered_map<int, std::vector<int>> foundHappy;
 
 struct HappyGenerator {
   std::vector<int> find_happy_up_to(int last, const int base);
@@ -48,18 +47,19 @@ bool happyFind(int number, int base = 10) {
   std::vector<int> happyVec;
   // Adds digitSS to map until it finds a duplicate
   do {
-    happyVec.push_back(number);
+     happyVec.push_back(number);
     number = digitSquareSum(number, base);
 
     if (number == 1) 
       return true;
 
-  } while (std::find(happyVec.begin(), happyVec.end(), number) != happyVec.end());
+  } while(std::find(happyVec.begin(), happyVec.end(), number) == happyVec.end());
   return false;
 }
 
 // finds all happy numbers up to and including last in a certain base
 std::vector<int> findHappyPrecalc(int last, const int base = 10) {
+  // if a number in base 10 is already calulated, it retrieves it
   std::vector<int> happyNums;
   for (int i = 1; i <= 500; i++) {
     if (happyFind(i, base)) {
@@ -72,12 +72,6 @@ std::vector<int> findHappyPrecalc(int last, const int base = 10) {
 // finds all happy numbers up to and including last in a certain base
 std::vector<int> HappyGenerator::find_happy_up_to
 (int last, const int base = 10) {
-  /* if a number in base 10 is already calulated, it retrieves it
-  if (base == 10) {
-    if (foundHappy.find(last) != foundHappy.end())
-      return foundHappy[last];
-  }*/
-
   // if a base isn't found, generate it
   if (Happies.find(base) == Happies.end())
   {
@@ -90,8 +84,6 @@ std::vector<int> HappyGenerator::find_happy_up_to
       happyNums.push_back(i);
     }
   }
-  //foundHappy.insert(std::pair<int, intstd::vector<int>>(base, findHappyPrecalc(last, base)));
-    //foundHappy[last] = happyNums;
   return happyNums;
 }
 
@@ -108,7 +100,7 @@ std::vector<int> HappyGenerator::happiness_cycle(int number, int base = 10) {
       numCycle.push_back(number);
       return numCycle;
     }
-  } while (std::find(happyVec.begin(), happyVec.end(), number) == happyVec.end());
+  } while(std::find(happyVec.begin(), happyVec.end(), number) == happyVec.end());
 
   numCycle.push_back(number);
   int startOfCycle = number;
