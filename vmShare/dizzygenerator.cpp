@@ -8,12 +8,9 @@
 #include <vector>
 #include "timer.h"
 
-// lookup for optimization
-std::unordered_map<int, std::vector<int>> Happies;
-
-//std::unordered_map<int, std::vector<int>> foundHappy;
-
 struct HappyGenerator {
+  std::unordered_map<int, std::vector<int>> Happies;
+  std::unordered_map<int, std::unordered_map<int, std::vector<int>>> foundHappy;
   std::vector<int> find_happy_up_to(int last, const int base);
   std::vector<int> happiness_cycle(int number, int base);
   bool is_happy(int number, int base);
@@ -72,6 +69,10 @@ std::vector<int> findHappyPrecalc(int last, const int base = 10) {
 // finds all happy numbers up to and including last in a certain base
 std::vector<int> HappyGenerator::find_happy_up_to
 (int last, const int base = 10) {
+  if (foundHappy.find(base) != foundHappy.end())
+    if (foundHappy.at(base).find(last) != foundHappy.at(base).end())
+      return foundHappy[base][last];
+
   // if a base isn't found, generate it
   if (Happies.find(base) == Happies.end())
   {
@@ -84,6 +85,7 @@ std::vector<int> HappyGenerator::find_happy_up_to
       happyNums.push_back(i);
     }
   }
+  foundHappy[base][last] = happyNums;
   return happyNums;
 }
 
