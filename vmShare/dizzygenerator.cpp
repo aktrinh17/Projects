@@ -1,8 +1,9 @@
 // Copyright 2018 Alexander Trinh aktrinh@bu.edu
 
 #include <algorithm>
+#include <array>
+#include <cstdint>
 #include <iostream>
-#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -10,7 +11,7 @@
 
 struct dizzyGenerator {
   std::unordered_map<int, std::vector<int>> Happies;
- // std::unordered_multimap<int, std::unordered_multimap<int, std::vector<int>>> foundHappy;
+  std::unordered_map<int, std::vector<int>> foundHappy;
   std::vector<int> find_dizzy_up_to(int last, const int base);
   std::vector<int> dizziness_cycle(int number, int base);
   bool is_dizzy(int number, int base);
@@ -27,35 +28,32 @@ int digitSquareSum(int num, const int base = 10) {
 }
 
 // finds if a number is happy in a certain base
-bool dizzyFind(int number, int base = 10) { 
+bool dizzyFind(int number, int base = 10) {
   std::vector<int> happyVec;
   // Adds digitSS to map until it finds a duplicate
   do {
-     happyVec.push_back(number);
+    happyVec.push_back(number);
     number = digitSquareSum(number, base);
-    if (number == 1) 
+    if (number == 1)
       return true;
-
-  } while(std::find(happyVec.begin(), happyVec.end(), number) == happyVec.end());
+  } while (std::find(happyVec.begin(), happyVec.end(), number)
+           == happyVec.end());
   return false;
 }
 
 // finds if a number is happy in a certain base
 bool dizzyGenerator::is_dizzy(int number, int base = 10) {
   // checks for if a certain base is not already there
-  if (Happies.find(base) == Happies.end() || Happies.find(base) == Happies.begin())
-  {
+  if (Happies.find(base) == Happies.end() || Happies.find(base)
+      == Happies.begin()) {
     return (dizzyFind(number, base));
-  } 
-  else 
-  { 
-    number = digitSquareSum(number, base);
-    if (std::find(Happies.at(base).begin(), Happies.at(base).end(), number) != Happies.at(base).end())
-    {
-      return true;
-    }
-    return false;
   }
+  number = digitSquareSum(number, base);
+  if (std::find(Happies.at(base).begin(), Happies.at(base).end(), number)
+      != Happies.at(base).end()) {
+    return true;
+  }
+  return false;
 }
 
 // finds all happy numbers up to and including last in a certain base
@@ -72,13 +70,12 @@ std::vector<int> findDizzyPrecalc(int last, const int base = 10) {
 // finds all happy numbers up to and including last in a certain base
 std::vector<int> dizzyGenerator::find_dizzy_up_to
 (int last, const int base = 10) {
-  /*if (foundHappy.find(base) != foundHappy.end())
-    if (foundHappy.at(base).find(last) != foundHappy.at(base).end())
-      return foundHappy.at(base).at(last);*/
+  std::string temp = std::to_string(last) + std::to_string(base);
+    if (foundHappy.find(std::stoi(temp)) != foundHappy.end())
+      return foundHappy.at(std::stoi(temp));
 
   // if a base isn't found, generate it
-  if (Happies.find(base) == Happies.end())
-  {
+  if (Happies.find(base) == Happies.end()) {
     Happies.emplace(base, findDizzyPrecalc(last, base));
   }
 
@@ -88,8 +85,10 @@ std::vector<int> dizzyGenerator::find_dizzy_up_to
       happyNums.push_back(i);
     }
   }
-  //foundHappy(base)(last) = happyNums;
-   // foundHappy(base).emplace(last, happyNums);
+  // foundHappy(base)(last) = happyNums;
+  // foundHappy(base).emplace(last, happyNums);
+  foundHappy.emplace(std::stoi(temp), happyNums);
+
   return happyNums;
 }
 
@@ -106,7 +105,8 @@ std::vector<int> dizzyGenerator::dizziness_cycle(int number, int base = 10) {
       numCycle.push_back(number);
       return numCycle;
     }
-  } while(std::find(happyVec.begin(), happyVec.end(), number) == happyVec.end());
+  } while (std::find(happyVec.begin(), happyVec.end(), number)
+           == happyVec.end());
 
   numCycle.push_back(number);
   int startOfCycle = number;
@@ -231,7 +231,7 @@ void standard_tests() {
     std::vector<int> res =  h.find_dizzy_up_to(start_size);
     t3.stop();
     std::vector<uint64_t> locs{0, res.size() / 3,
-                             2 * res.size() / 3, res.size() - 1};
+                               2 * res.size() / 3, res.size() - 1};
     for (auto i : locs) {
       std::cout << "ss:" << start_size << " i: " << i
                 << " v: " << res.at(i) << "\n";
@@ -248,7 +248,7 @@ void standard_tests() {
     std::vector<int> res =  h.find_dizzy_up_to(20000, base);
     t4.stop();
     std::vector<uint64_t> locs{0, res.size() / 3,
-                             2 * res.size() / 3, res.size() - 1};
+                               2 * res.size() / 3, res.size() - 1};
     for (auto i : locs) {
       std::cout << "base:" << base
                 << " i: " << i << " v: " << res.at(i) << "\n";
