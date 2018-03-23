@@ -8,12 +8,12 @@
 #include <vector>
 #include "timer.h"
 
-struct HappyGenerator {
+struct dizzyGenerator {
   std::unordered_map<int, std::vector<int>> Happies;
-  std::unordered_map<int, std::unordered_map<int, std::vector<int>>> foundHappy;
-  std::vector<int> find_happy_up_to(int last, const int base);
-  std::vector<int> happiness_cycle(int number, int base);
-  bool is_happy(int number, int base);
+ // std::unordered_multimap<int, std::unordered_multimap<int, std::vector<int>>> foundHappy;
+  std::vector<int> find_dizzy_up_to(int last, const int base);
+  std::vector<int> dizziness_cycle(int number, int base);
+  bool is_dizzy(int number, int base);
 };
 
 // divides a number into its digits and finds its square
@@ -27,26 +27,12 @@ int digitSquareSum(int num, const int base = 10) {
 }
 
 // finds if a number is happy in a certain base
-bool HappyGenerator::is_happy(int number, int base = 10) {
-  // checks for if a certain base is not already there
-  if (Happies.find(base) == Happies.end()){
-    return (happiness_cycle(number, base).front() == 1);
-  } else { 
-    number = digitSquareSum(number, base);
-    if (std::find(Happies.at(base).begin(), Happies.at(base).end(), number) != Happies.at(base).end())
-      return true;
-    return false;
- }
-}
-
-// finds if a number is happy in a certain base
-bool happyFind(int number, int base = 10) { 
+bool dizzyFind(int number, int base = 10) { 
   std::vector<int> happyVec;
   // Adds digitSS to map until it finds a duplicate
   do {
      happyVec.push_back(number);
     number = digitSquareSum(number, base);
-
     if (number == 1) 
       return true;
 
@@ -54,12 +40,29 @@ bool happyFind(int number, int base = 10) {
   return false;
 }
 
+// finds if a number is happy in a certain base
+bool dizzyGenerator::is_dizzy(int number, int base = 10) {
+  // checks for if a certain base is not already there
+  if (Happies.find(base) == Happies.end() || Happies.find(base) == Happies.begin())
+  {
+    return (dizzyFind(number, base));
+  } 
+  else 
+  { 
+    number = digitSquareSum(number, base);
+    if (std::find(Happies.at(base).begin(), Happies.at(base).end(), number) != Happies.at(base).end())
+    {
+      return true;
+    }
+    return false;
+  }
+}
+
 // finds all happy numbers up to and including last in a certain base
-std::vector<int> findHappyPrecalc(int last, const int base = 10) {
-  // if a number in base 10 is already calulated, it retrieves it
+std::vector<int> findDizzyPrecalc(int last, const int base = 10) {
   std::vector<int> happyNums;
   for (int i = 1; i <= 500; i++) {
-    if (happyFind(i, base)) {
+    if (dizzyFind(i, base)) {
       happyNums.push_back(i);
     }
   }
@@ -67,29 +70,30 @@ std::vector<int> findHappyPrecalc(int last, const int base = 10) {
 }
 
 // finds all happy numbers up to and including last in a certain base
-std::vector<int> HappyGenerator::find_happy_up_to
+std::vector<int> dizzyGenerator::find_dizzy_up_to
 (int last, const int base = 10) {
-  if (foundHappy.find(base) != foundHappy.end())
+  /*if (foundHappy.find(base) != foundHappy.end())
     if (foundHappy.at(base).find(last) != foundHappy.at(base).end())
-      return foundHappy[base][last];
+      return foundHappy.at(base).at(last);*/
 
   // if a base isn't found, generate it
   if (Happies.find(base) == Happies.end())
   {
-    Happies.insert(std::pair<int, std::vector<int>>(base, findHappyPrecalc(last, base)));
+    Happies.emplace(base, findDizzyPrecalc(last, base));
   }
 
   std::vector<int> happyNums;
   for (int i = 1; i <= last; i++) {
-    if (is_happy(i, base)) {
+    if (is_dizzy(i, base)) {
       happyNums.push_back(i);
     }
   }
-  foundHappy[base][last] = happyNums;
+  //foundHappy(base)(last) = happyNums;
+   // foundHappy(base).emplace(last, happyNums);
   return happyNums;
 }
 
-std::vector<int> HappyGenerator::happiness_cycle(int number, int base = 10) {
+std::vector<int> dizzyGenerator::dizziness_cycle(int number, int base = 10) {
   std::vector<int> numCycle;
   std::vector<int> happyVec;
 
@@ -120,7 +124,7 @@ std::vector<int> HappyGenerator::happiness_cycle(int number, int base = 10) {
 //        when submitting
 
 
-const int SLIMIT = 4'000'000;
+const double TLIMIT = 0.5;
 
 void standard_tests();
 void interactive_main();
@@ -138,108 +142,126 @@ void standard_tests() {
   std::cerr << "Your computers speed relative to server: " << speed << "\n";
 
   Timer tall, t0("setup"), t1("all100");
-  Timer t3("million1"), t4("million2");
+  Timer t3("lots_of_base_10"), t4("lots_of_bases");
 
 
   std::vector<std::pair<int, int>> res;
 
   t0.start();
-  HappyGenerator h;
+  dizzyGenerator h;
   t0.stop();
 
   // Test case definitions.
-  std::vector<int> happy_tests_one{1, 4, 7, 145, 91, 31435135};
-  std::vector<std::vector<int>> happy_tests_two{{14500, 10}, {2, 3},
+  std::vector<int> dizzy_tests_one{1, 4, 7, 145, 91, 31435135};
+  std::vector<std::vector<int>> dizzy_tests_two{{14500, 10}, {2, 3},
     {255, 2}, {255, 4}, {998, 998}, {4, 10}, {7, 3},
     {41, 100}, {234, 100}, {124, 100}, {22357, 1000}, {1049, 1000}};
   std::vector<std::vector<int>> find_upto_tests_two{{100, 3},
     {1000, 11}, {20, 2}};
   std::vector<int> find_upto_tests_one{10, 100};
 
-  std::cout << "Testing is_happy (two parameters)\n";
-  for (auto e : happy_tests_two) {
-    std::cout << "is_happy(" << e.at(0) << "," << e.at(1) << ") = ";
-    std::cout << h.is_happy(e.at(0), e.at(1)) << "\n";
+  std::cout << "Testing is_dizzy (two parameters)\n";
+  for (auto e : dizzy_tests_two) {
+    std::cout << "is_dizzy(" << e.at(0) << "," << e.at(1) << ") = ";
+    std::cout << h.is_dizzy(e.at(0), e.at(1)) << "\n";
   }
 
-  std::cout << "Testing is_happy (one parameter)\n";
-  for (auto e : happy_tests_one) {
-    std::cout << "is_happy(" << e << ") = ";
-    std::cout << h.is_happy(e) << "\n";
+  std::cout << "Testing is_dizzy (one parameter)\n";
+  for (auto e : dizzy_tests_one) {
+    std::cout << "is_dizzy(" << e << ") = ";
+    std::cout << h.is_dizzy(e) << "\n";
   }
 
-  std::cout << "Testing happiness_cycle (two parameters)\n";
-  for (auto e : happy_tests_two) {
-    std::cout << "happiness_cycle(" << e.at(0) << "," << e.at(1) << ") = ";
-    for (auto cyc_val : h.happiness_cycle(e.at(0), e.at(1)))
+  std::cout << "Testing dizziness_cycle (two parameters)\n";
+  for (auto e : dizzy_tests_two) {
+    std::cout << "dizziness_cycle(" << e.at(0) << "," << e.at(1) << ") = ";
+    for (auto cyc_val : h.dizziness_cycle(e.at(0), e.at(1)))
       std::cout << cyc_val << " ";
     std::cout << "\n";
   }
 
-  std::cout << "Testing happiness_cycle (one parameter)\n";
-  for (auto e : happy_tests_one) {
-    std::cout << "happiness_cycle(" << e << ") = ";
-    for (auto cyc_val : h.happiness_cycle(e))
+  std::cout << "Testing dizziness_cycle (one parameter)\n";
+  for (auto e : dizzy_tests_one) {
+    std::cout << "dizziness_cycle(" << e << ") = ";
+    for (auto cyc_val : h.dizziness_cycle(e))
       std::cout << cyc_val << " ";
     std::cout << "\n";
   }
 
-  std::cout << "Testing find_happy_up_to (two parameters)\n";
+  std::cout << "Testing find_dizzy_up_to (two parameters)\n";
   for (auto e : find_upto_tests_two) {
-    std::cout << "find_happy_up_to(" << e.at(0) << "," << e.at(1) << ") = ";
-    for (auto happyval : h.find_happy_up_to(e.at(0), e.at(1)))
-      std::cout << happyval << " ";
+    std::cout << "find_dizzy_up_to(" << e.at(0) << "," << e.at(1) << ") = ";
+    for (auto dizzyval : h.find_dizzy_up_to(e.at(0), e.at(1)))
+      std::cout << dizzyval << " ";
     std::cout << "\n";
   }
 
 
-  std::cout << "Testing find_happy_up_to (one parameter)\n";
+  std::cout << "Testing find_dizzy_up_to (one parameter)\n";
   for (auto e : find_upto_tests_one) {
-    std::cout << "find_happy_up_to(" << e << ") = ";
-    for (auto happynum : h.find_happy_up_to(e))
-      std::cout << happynum << " ";
+    std::cout << "find_dizzy_up_to(" << e << ") = ";
+    for (auto dizzynum : h.find_dizzy_up_to(e))
+      std::cout << dizzynum << " ";
     std::cout << "\n";
   }
 
 
-  std::cout << "Finding the happiest bases\n";
+  std::cout << "Finding the dizziest bases\n";
 
   t1.start();
   for (int i = 2; i < 100; i++) {
-    auto v = h.find_happy_up_to(100, i);
+    auto v = h.find_dizzy_up_to(100, i);
     res.push_back(std::make_pair(v.size(), i));
   }
   t1.stop();
 
   std::sort(res.begin(), res.end());
 
-  std::cout << "The ten happiest bases (for 1 to 100) are \n";
+  std::cout << "The ten dizziest bases (for 1 to 100) are \n";
   for (auto it = res.rbegin(); it != res.rbegin() + 10 ; it++)
     std::cout << "base "  << it -> second << " has "
-              << it -> first << " happy\n";
+              << it -> first << " dizzy\n";
 
 
-  t3.start();
-  int count1 = h.find_happy_up_to(SLIMIT).size();
-  t3.stop();
 
-  t4.start();
-  int count2 = h.find_happy_up_to(SLIMIT).size();
-  t4.stop();
+  std::cout << "\nHow many dizzy can you find in 0.5 seconds, base 10?\n";
+  int start_size = 100;
+  while (t3.time() < TLIMIT) {
+    t3.start();
+    std::vector<int> res =  h.find_dizzy_up_to(start_size);
+    t3.stop();
+    std::vector<uint64_t> locs{0, res.size() / 3,
+                             2 * res.size() / 3, res.size() - 1};
+    for (auto i : locs) {
+      std::cout << "ss:" << start_size << " i: " << i
+                << " v: " << res.at(i) << "\n";
+    }
+    start_size *= 2;
+  }
 
 
-  std::cout << "In first " << SLIMIT << " "
-            << count1 << " are happy (base 10)\n";
 
-  std::cout << "In first " << SLIMIT << " "
-            << count2 << " are happy (base 10)\n";
+  std::cout << "\nHow many dizzy can you find in 0.5 seconds, all bases?\n";
+  int base = 2;
+  while (t4.time() < TLIMIT) {
+    t4.start();
+    std::vector<int> res =  h.find_dizzy_up_to(20000, base);
+    t4.stop();
+    std::vector<uint64_t> locs{0, res.size() / 3,
+                             2 * res.size() / 3, res.size() - 1};
+    for (auto i : locs) {
+      std::cout << "base:" << base
+                << " i: " << i << " v: " << res.at(i) << "\n";
+    }
+    base *= 2;
+  }
 }
 
 
 void interactive_main() {
   std::string asktype;
   int number, parameters, base;
-  HappyGenerator h;
+  dizzyGenerator h;
 
   while (true) {
     std::cin >> asktype;
@@ -247,32 +269,31 @@ void interactive_main() {
     std::cin >> parameters >> number;
     if (parameters > 1) std::cin >> base;
     if (asktype == "i" and parameters == 2) {
-      std::cout << "is_happy(" << number << "," << base << ") = ";
-      std::cout << h.is_happy(number, base) << "\n";
+      std::cout << "is_dizzy(" << number << "," << base << ") = ";
+      std::cout << h.is_dizzy(number, base) << "\n";
     } else if (asktype == "i" and parameters == 1) {
-      std::cout << "is_happy(" << number << ") = ";
-      std::cout << h.is_happy(number) << "\n";
+      std::cout << "is_dizzy(" << number << ") = ";
+      std::cout << h.is_dizzy(number) << "\n";
     } else if (asktype == "c" and parameters == 2) {
-      std::cout << "happiness_cycle(" << number << "," << base << ") = ";
-      for (auto cyc_val : h.happiness_cycle(number, base) )
+      std::cout << "dizziness_cycle(" << number << "," << base << ") = ";
+      for (auto cyc_val : h.dizziness_cycle(number, base) )
         std::cout << cyc_val << " ";
       std::cout << "\n";
     } else if (asktype == "c" and parameters == 1) {
-      std::cout << "happiness_cycle(" << number << ") = ";
-      for (auto cyc_val : h.happiness_cycle(number))
+      std::cout << "dizziness_cycle(" << number << ") = ";
+      for (auto cyc_val : h.dizziness_cycle(number))
         std::cout << cyc_val << " ";
       std::cout << "\n";
     } else if (asktype == "f" and parameters == 2) {
-      std::cout << "find_happy_up_to(" << number << "," << base << ") = ";
-      for (auto happyval : h.find_happy_up_to(number, base))
-        std::cout << happyval << " ";
+      std::cout << "find_dizzy_up_to(" << number << "," << base << ") = ";
+      for (auto dizzyval : h.find_dizzy_up_to(number, base))
+        std::cout << dizzyval << " ";
       std::cout << "\n";
     } else if (asktype == "f" and parameters == 1) {
-      std::cout << "find_happy_up_to(" << number << ") = ";
-      for (auto happynum : h.find_happy_up_to(number))
-        std::cout << happynum << " ";
+      std::cout << "find_dizzy_up_to(" << number << ") = ";
+      for (auto dizzynum : h.find_dizzy_up_to(number))
+        std::cout << dizzynum << " ";
       std::cout << "\n";
     }
   }
 }
-
