@@ -14,7 +14,7 @@
 
 struct dizzyGenerator {
   std::unordered_map<int, std::vector<int>> Happies;
-  std::unordered_map<std::string, std::vector<int>> founddizzy;
+  std::unordered_map<std::string, std::vector<int>> foundDizzy;
   std::vector<int> find_dizzy_up_to(int last, const int base);
   std::vector<int> dizziness_cycle(int number, int base);
   bool is_dizzy(int number, int base);
@@ -33,7 +33,7 @@ int digitSquareSum(int num, const int base = 10) {
 // finds if a number is dizzy in a certain base
 bool dizzyFind(int number, int base = 10) {
   std::vector<int> dizzyVec;
-  // Adds digitSS to map until it finds a duplicate
+  // Adds digitSS to vector until it finds a duplicate
   do {
     dizzyVec.push_back(number);
     number = digitSquareSum(number, base);
@@ -44,7 +44,8 @@ bool dizzyFind(int number, int base = 10) {
   return false;
 }
 
-// finds if a number is dizzy in a certain base
+// finds if a number is dizzy in a certain base using a lookup
+// or dizzyFind if the lookup is not generated for the base yet
 bool dizzyGenerator::is_dizzy(int number, int base = 10) {
   // checks for if a certain base is not already there
   if (Happies.find(base) == Happies.end() ||
@@ -76,8 +77,8 @@ std::vector<int> dizzyGenerator::find_dizzy_up_to
 (int last, const int base = 10) {
   // checks for an already calculated vector for a specific base and last
   std::string temp = std::to_string(base) + " " + std::to_string(last);
-  if (founddizzy.find(temp) != founddizzy.end())
-    return founddizzy.at(temp);
+  if (foundDizzy.find(temp) != foundDizzy.end())
+    return foundDizzy.at(temp);
 
   // only create lookup when necessary
   // ie large numbers or large bases
@@ -96,11 +97,12 @@ std::vector<int> dizzyGenerator::find_dizzy_up_to
       dizzyNums.push_back(i);
     }
   }
-  // saves vector for future recall
-  founddizzy.emplace(temp, dizzyNums);
+  // saves vector for future reference
+  foundDizzy.emplace(temp, dizzyNums);
   return dizzyNums;
 }
 
+// returns the cycle which non dizzynumbers are stuck in or 1 for happy numbers
 std::vector<int> dizzyGenerator::dizziness_cycle(int number, int base = 10) {
   std::vector<int> numCycle;
   std::vector<int> dizzyVec;
