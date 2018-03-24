@@ -1,7 +1,10 @@
 // Copyright 2018 Alexander Trinh aktrinh@bu.edu
-
+// **********************************************
+// This project did not allow the use of brackets
+// As a result, the syntax seen below is not
+// as visually pleasing
+// **********************************************
 #include <algorithm>
-#include <array>
 #include <cstdint>
 #include <iostream>
 #include <string>
@@ -11,7 +14,7 @@
 
 struct dizzyGenerator {
   std::unordered_map<int, std::vector<int>> Happies;
-  std::unordered_map<int, std::vector<int>> foundHappy;
+  std::unordered_map<std::string, std::vector<int>> founddizzy;
   std::vector<int> find_dizzy_up_to(int last, const int base);
   std::vector<int> dizziness_cycle(int number, int base);
   bool is_dizzy(int number, int base);
@@ -27,25 +30,25 @@ int digitSquareSum(int num, const int base = 10) {
   return sum;
 }
 
-// finds if a number is happy in a certain base
+// finds if a number is dizzy in a certain base
 bool dizzyFind(int number, int base = 10) {
-  std::vector<int> happyVec;
+  std::vector<int> dizzyVec;
   // Adds digitSS to map until it finds a duplicate
   do {
-    happyVec.push_back(number);
+    dizzyVec.push_back(number);
     number = digitSquareSum(number, base);
     if (number == 1)
       return true;
-  } while (std::find(happyVec.begin(), happyVec.end(), number)
-           == happyVec.end());
+  } while (std::find(dizzyVec.begin(), dizzyVec.end(), number)
+           == dizzyVec.end());
   return false;
 }
 
-// finds if a number is happy in a certain base
+// finds if a number is dizzy in a certain base
 bool dizzyGenerator::is_dizzy(int number, int base = 10) {
   // checks for if a certain base is not already there
-  if (Happies.find(base) == Happies.end() || Happies.find(base)
-      == Happies.begin()) {
+  if (Happies.find(base) == Happies.end() ||
+      Happies.find(base) == Happies.begin()) {
     return (dizzyFind(number, base));
   }
   number = digitSquareSum(number, base);
@@ -56,57 +59,63 @@ bool dizzyGenerator::is_dizzy(int number, int base = 10) {
   return false;
 }
 
-// finds all happy numbers up to and including last in a certain base
+// finds all dizzy numbers up to and including last in a certain base
+// generates a vector for the precalulation of dizzy numbers
 std::vector<int> findDizzyPrecalc(int last, const int base = 10) {
-  std::vector<int> happyNums;
+  std::vector<int> dizzyNums;
   for (int i = 1; i <= 500; i++) {
     if (dizzyFind(i, base)) {
-      happyNums.push_back(i);
+      dizzyNums.push_back(i);
     }
   }
-  return happyNums;
+  return dizzyNums;
 }
 
-// finds all happy numbers up to and including last in a certain base
+// finds all dizzy numbers up to and including last in a certain base
 std::vector<int> dizzyGenerator::find_dizzy_up_to
 (int last, const int base = 10) {
-  std::string temp = std::to_string(last) + std::to_string(base);
-    if (foundHappy.find(std::stoi(temp)) != foundHappy.end())
-      return foundHappy.at(std::stoi(temp));
+  // checks for an already calculated vector for a specific base and last
+  std::string temp = std::to_string(base) + " " + std::to_string(last);
+  if (founddizzy.find(temp) != founddizzy.end())
+    return founddizzy.at(temp);
 
-  // if a base isn't found, generate it
-  if (Happies.find(base) == Happies.end()) {
-    Happies.emplace(base, findDizzyPrecalc(last, base));
-  }
-
-  std::vector<int> happyNums;
-  for (int i = 1; i <= last; i++) {
-    if (is_dizzy(i, base)) {
-      happyNums.push_back(i);
+  // only create lookup when necessary
+  // ie large numbers or large bases
+  // low numbers and low bases dont require the lookup
+  // it is only necessary for quickly finding large numbers
+  if (last > 100000 || base > 90) {
+    // if a base isn't found, generate it
+    if (Happies.find(base) == Happies.end()) {
+      Happies.emplace(base, findDizzyPrecalc(last, base));
     }
   }
-  // foundHappy(base)(last) = happyNums;
-  // foundHappy(base).emplace(last, happyNums);
-  foundHappy.emplace(std::stoi(temp), happyNums);
-
-  return happyNums;
+  // creates a vector of dizzy numbers up to last
+  std::vector<int> dizzyNums;
+  for (int i = 1; i <= last; i++) {
+    if (is_dizzy(i, base)) {
+      dizzyNums.push_back(i);
+    }
+  }
+  // saves vector for future recall
+  founddizzy.emplace(temp, dizzyNums);
+  return dizzyNums;
 }
 
 std::vector<int> dizzyGenerator::dizziness_cycle(int number, int base = 10) {
   std::vector<int> numCycle;
-  std::vector<int> happyVec;
+  std::vector<int> dizzyVec;
 
   // Adds digitSS to map until it finds a cycle
   do {
-    happyVec.push_back(number);
+    dizzyVec.push_back(number);
     number = digitSquareSum(number, base);
-    // returns 1 if a happy number is found
+    // returns 1 if a dizzy number is found
     if (number == 1) {
       numCycle.push_back(number);
       return numCycle;
     }
-  } while (std::find(happyVec.begin(), happyVec.end(), number)
-           == happyVec.end());
+  } while (std::find(dizzyVec.begin(), dizzyVec.end(), number)
+           == dizzyVec.end());
 
   numCycle.push_back(number);
   int startOfCycle = number;
