@@ -41,7 +41,7 @@ class Arrangements {
   }
 
   double panel_count(int n) {
-  	int seats[n];
+  	double seats[n];
   	seats[0] = 1;
   	seats[1] = 2;
   	for (int i = 2; i <= n; i ++)
@@ -52,7 +52,16 @@ class Arrangements {
   }
 
   double dinner_count(int n) {
-    return 1;
+	double seats[n];
+	seats[0] = 1;
+	seats[1] = 2;
+	seats[2] = 6;
+	seats[3] = 9;
+	for (int i = 4; i <= n; i++)
+	{
+		seats[i] = seats[i-1] + seats[i-2] -2;
+	}
+    return seats[n-1];
   }
 
   // Solution goes here.
