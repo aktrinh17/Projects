@@ -24,14 +24,12 @@ class Arrangements {
 
   }
   explicit Arrangements(string thenames){
-  	this -> thenames = thenames;
+
   }
   //see  http://en.cppreference.com/w/cpp/language/explicit
 
   vector<string> panel_shuffles(int n) {
     vector<string> v;
-
-
     return v;
   }
 
@@ -41,27 +39,29 @@ class Arrangements {
   }
 
   double panel_count(int n) {
-  	double seats[n];
-  	seats[0] = 1;
-  	seats[1] = 2;
-  	for (int i = 2; i <= n; i ++)
-  	{
-  		seats[i] = seats[i-1] + seats[i-2];
-  	}
-   	return seats[n-1];
+  cout.precision(15);
+  std::vector<double> seats;
+  seats.push_back(1);
+  seats.push_back(2);
+  for (int i = 2; i <= n; i ++)
+  {
+  	seats.push_back(seats.at(i-1) + seats.at(i-2));
   }
+   return seats.at(n-1);
+}
 
   double dinner_count(int n) {
-	double seats[n];
-	seats[0] = 1;
-	seats[1] = 2;
-	seats[2] = 6;
-	seats[3] = 9;
+	cout.precision(15);
+	std::vector<double> seats;
+	seats.push_back(1);
+	seats.push_back(2);
+	seats.push_back(6);
+	seats.push_back(9);
 	for (int i = 4; i <= n; i++)
 	{
-		seats[i] = seats[i-1] + seats[i-2] -2;
+	  seats.push_back(seats.at(i-1) + seats.at(i-2) -2);
 	}
-    return seats[n-1];
+    return seats.at(n-1);
   }
 
   // Solution goes here.
