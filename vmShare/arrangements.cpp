@@ -20,7 +20,7 @@ class Arrangements {
   // your private data
 
  public:
-
+ string thenames = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   //more stuff here. data and methods
 
   Arrangements();
@@ -36,8 +36,62 @@ class Arrangements {
 
 // Methods and constructors defined here:
 
+// returns a vector of all the possible seating
+// combinations with n people
 vector<string> panel_shuffles(int n) {
     vector<string> v;
+    // create a map for reference in generating 
+    // higher n seating combinations
+    unordered_map<int, vector<string>> refMap;
+
+    // creates the first 2 vectors in the map
+    // to start the fibonacci-like sequence
+    string str1;
+    str1 = thenames.at(0);
+
+    vector<string> first;
+    first.push_back(str1);
+
+    refMap.emplace(0, first);
+
+    string str2;
+    str2 += thenames.at(0);
+    str2 += thenames.at(1);
+
+    string str3;
+    str3 += thenames.at(1);
+    str3 += thenames.at(0);
+
+    vector<string> second;
+    second.push_back(str2);
+    second.push_back(str3);
+
+    refMap.emplace(1, second);
+
+    // generates seating combinations for n > 2
+    // by referring to previous vectors in refMap
+    for (int i = 2; i < n; i++)
+    {
+    	vector<string> xi;
+    	for (int j = 0; j < refMap.at(i-1).size(); j++)
+    	{	
+    		str1 = "";
+    		str1 += refMap.at(i-1).at(j);
+    		str1 += thenames.at(i);
+    		xi.push_back(str1);
+    	}
+
+    	for (int k = 0; k < refMap.at(i-2).size(); k++)
+    	{
+    		str2 = "";
+    		str2 += refMap.at(i-2).at(k);
+    		str2 += thenames.at(i);
+    		str2 += thenames.at(i-1);
+    		xi.push_back(str2);
+    	}
+    	refMap.emplace(i, xi);
+    }
+    v = refMap.at(n-1);
     return v;
   }
 
