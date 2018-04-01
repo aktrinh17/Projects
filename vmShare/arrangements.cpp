@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "timer.h"
@@ -14,6 +15,7 @@ using std::vector;
 using std::string;
 using std::cout;
 using std::sort;
+using std::unordered_map;
 
 class Arrangements {
  private:
