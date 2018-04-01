@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
 #include "timer.h"
 
 using std::vector;
@@ -15,20 +16,27 @@ using std::cout;
 using std::sort;
 
 class Arrangements {
-  
  private:
   // your private data
 
  public:
-  Arrangements() {
 
-  }
-  explicit Arrangements(string thenames){
+  //more stuff here. data and methods
 
-  }
-  //see  http://en.cppreference.com/w/cpp/language/explicit
+  Arrangements();
+  explicit Arrangements(string thenames);
+  vector<string> panel_shuffles(int n);
+  vector<string> dinner_shuffles(int n);
+  double panel_count(int n);
+  double dinner_count(int n);
+  
+  // more methods if you want
 
-  vector<string> panel_shuffles(int n) {
+};
+
+// Methods and constructors defined here:
+
+vector<string> panel_shuffles(int n) {
     vector<string> v;
     return v;
   }
@@ -38,34 +46,39 @@ class Arrangements {
     return v;
   }
 
+  // calculates the number of ways the panelists can be arranged
+  // if there are n panelists
   double panel_count(int n) {
-  cout.precision(15);
   std::vector<double> seats;
   seats.push_back(1);
   seats.push_back(2);
+
+  //calculates the next number by referring to the previous 2 numbers
   for (int i = 2; i <= n; i ++)
   {
   	seats.push_back(seats.at(i-1) + seats.at(i-2));
   }
+   cout.precision(15);
    return seats.at(n-1);
 }
 
+  // calculates the number of ways the dinner guests can be arranged
+  // if there are n guests
   double dinner_count(int n) {
-	cout.precision(15);
 	std::vector<double> seats;
 	seats.push_back(1);
 	seats.push_back(2);
 	seats.push_back(6);
 	seats.push_back(9);
+
+	//calculates the next number by referring to the previous 2 numbers
 	for (int i = 4; i <= n; i++)
 	{
 	  seats.push_back(seats.at(i-1) + seats.at(i-2) -2);
 	}
+	cout.precision(15);
     return seats.at(n-1);
   }
-
-  // Solution goes here.
-};
 
 // TESTING: leave this line and below as is.
 
@@ -85,8 +98,8 @@ void show_partial_result(string testname, vector<string> res, int n) {
                              2 * res.size() / 3, res.size() - 1};
   std::cout << "\n" << testname << " " << n << "\n";
   for (auto i : locs) {
-    std::cout << " res[" << i
-              << "] = " << res.at(i) << "\n";
+    std::cout << " res.at(" << i
+              << ") = " << res.at(i) << "\n";
   }
 }
 
@@ -96,18 +109,23 @@ const int COUNTLIM_SMALL = 30;
 
 void standard_tests();
 void alternate_tests();
+void interactive_main();
 
 int main(int argc, char const ** argv) {
-  if (argc > 1)
+  if (argc > 1 and string(*(argv + 1)) == "alt")
     alternate_tests();
+  else if (argc > 1 and (string(*(argv + 1)) == string("int")))
+    interactive_main();
   else
     standard_tests();
 }
 
+// tests to be run for full credit, including performance.
 void standard_tests() {
-  // tests to be run for full credit, including performance.
+  int n;
 
   cout.precision(15);
+
   // Basic test
   Arrangements standard;
 
@@ -121,10 +139,10 @@ void standard_tests() {
   Arrangements numbers("123456789");
   Arrangements symbols("!@#$%^&*()_+");
 
-  std::array<Arrangements*,3> v{&standard, &numbers, &symbols};
+  std::array<Arrangements*, 3> v{&standard, &numbers, &symbols};
 
   cout << "\nPanel Shuffles for 6 panelists, 3 sets of names.\n";
-  for (auto arr : v) 
+  for (auto arr : v)
     show_result(arr->panel_shuffles(6));
 
   cout << "\nDinner Shuffles for 6 guests, 3 sets of names.\n";
@@ -132,63 +150,110 @@ void standard_tests() {
     show_result(arr->dinner_shuffles(6));
 
   // Count tests
-  Arrangements large(string(COUNTLIM,'a'));
+  Arrangements large(string(COUNTLIM, 'a'));
 
-  cout << "\nPanel Shuffle Count Table \n";
+  Timer t_pc("panel count", true);
+  n = 1;
+  cout << "\nPanel Shuffle Count Table (0.1 seconds)\n";
   cout << "     N  panel(N)\n";
-  for (int n = 1; n < COUNTLIM; n++) {
+
+  while (n < COUNTLIM and t_pc.time() < 0.1) {
+    t_pc.start();
+    double pc = large.panel_count(n);
+    t_pc.stop();
     cout << std::setw(6) << n << " "
-         << std::setw(6) << large.panel_count(n) << "\n";
+         << std::setw(6) << pc << "\n";
+    n++;
   }
 
-  cout << "\nDinner Shuffle Count Table \n";
+
+  Timer t_dc("dinner count", true);
+  n = 1;
+  cout << "\nDinner Shuffle Count Table (0.1 seconds)\n";
   cout << "     N  dinner(N)\n";
-  for (int n = 1; n < COUNTLIM; n++) {
+
+  while (n < COUNTLIM and t_dc.time() < 0.1) {
+    t_dc.start();
+    double dc = large.dinner_count(n);
+    t_dc.stop();
     cout << std::setw(6) << n << " "
-         << std::setw(6) <<large.dinner_count(n) << "\n";
+         << std::setw(6) << dc << "\n";
+    n++;
   }
 
-  Timer t_panel("panel");
-
-
+  Timer t_panel("panel", true);
+  n = 4;
   cout << "\nHow many panel shuffles can be created in 0.5 seconds?\n";
-  int n = 4;
 
   while (t_panel.time() < 0.5)  {
+    double last = t_panel.time();
     t_panel.start();
     vector<string> res = standard.panel_shuffles(n);
     t_panel.stop();
-    show_partial_result("panel",res, n);
+    show_partial_result("panel", res, n);
+    cout << "time " << t_panel.time() - last << "\n";
     n++;
   }
-  Timer t_dinner("dinner timing");
 
+  int largest_panel = n - 1;
+
+  Timer t_dinner("dinner timing", true);
   n = 4;
   cout << "\nHow many dinner shuffles can be created in 0.5 seconds?\n";
 
   while (t_dinner.time() < 0.5)  {
+    double last = t_dinner.time();
     t_dinner.start();
     vector<string> res = standard.dinner_shuffles(n);
     t_dinner.stop();
-    show_partial_result("dinner",res, n);
+    show_partial_result("dinner", res, n);
+    cout << "time " << t_dinner.time() - last << "\n";
     n++;
   }
+  cout << "\nLargest panel shuffles performed: "
+       << largest_panel << "\n";
+  cout << "\nLargest dinner shuffles performed: " << n - 1 << "\n";
 
   // Error checking
   Arrangements small("abcd");
   cout << "\nError Handling Tests\n";
 
-  try { small.panel_count(5);} catch (int n) { cout << n; };
-  try { small.panel_shuffles(6);} catch (int n) { cout << n; };
-  try { small.dinner_count(7);} catch (int n) { cout << n; };
-  try { small.dinner_shuffles(89);} catch (int n) { cout << n; };
-  try { large.dinner_shuffles(122);} catch (int n) { cout << n; };
-  try { numbers.dinner_shuffles(9);} catch (int n) { cout << n; };
-  try { numbers.dinner_shuffles(10);} catch (int n) { cout << n; };
+  try {
+    small.panel_count(5);
+  } catch (int n) {
+    cout << n;
+  }
+  try {
+    small.panel_shuffles(6);
+  } catch (int n) {
+    cout << n;
+  }
+  try {
+    small.dinner_count(7);
+  } catch (int n) {
+    cout << n;
+  }
+  try {
+    small.dinner_shuffles(89);
+  } catch (int n) {
+    cout << n;
+  }
+  try {
+    large.dinner_shuffles(122);
+  } catch (int n) {
+    cout << n;
+  }
+  try {
+    numbers.dinner_shuffles(9);
+  } catch (int n) {
+    cout << n;
+  }
+  try {
+    numbers.dinner_shuffles(10);
+  } catch (int n) {
+    cout << n;
+  }
   cout << "\n";
-
-
-
 }
 
 void alternate_tests() {
@@ -202,11 +267,67 @@ void alternate_tests() {
   cout << "\nPanel Shuffles for 10 panelists.\n";
   show_result(standard.panel_shuffles(10));
 
+  int n = 1;
+
   // Count tests
-  cout << "\nPanel Shuffle Count Table \n";
+  Timer t_pc("panel count", true);
+  cout << "\nPanel Shuffle Count Table (0.1 seconds)\n";
   cout << "     N  panel(N)\n";
-  for (int n = 1; n < COUNTLIM_SMALL; n++) {
+  while (n < 52 and t_pc.time() < 0.1) {
+    t_pc.start();
+    double pc = standard.panel_count(n);
+    t_pc.stop();
     cout << std::setw(6) << n << " "
-         << std::setw(6) << standard.panel_count(n) << "\n";
+         << std::setw(6) << pc << "\n";
+    n++;
+  }
+
+  cout << "\nHow many panel shuffles can be created in 0.5 seconds?\n";
+  n = 4;
+
+  Timer t_panel("panel", true);
+
+  while (t_panel.time() < 0.5)  {
+    t_panel.start();
+    vector<string> res = standard.panel_shuffles(n);
+    t_panel.stop();
+    show_partial_result("panel", res, n);
+    n++;
+  }
+  cout << "\nLargest panel shuffles performed: "
+       << n - 1 << "\n";
+}
+
+
+void interactive_main() {
+  std::string asktype, symbols;
+  int number;
+  cout << "Type quit to exit.\n";
+  cout << "Commands:\npc names n\nps names n\ndc names n\nds names n\n";
+  cout.precision(15);
+
+  while (true) {
+    std::cin >> asktype;
+    if (asktype == "quit") break;
+    std::cin >> symbols;
+    Arrangements h(symbols);
+    std::cin >> number;
+    if (asktype == "pc") {
+      std::cout << "panel_count(" << number <<  ") = ";
+      std::cout << h.panel_count(number) << "\n";
+    } else if (asktype == "ps") {
+      std::cout << "panel_shuffles(" << number <<  ") = ";
+      for (auto e : h.panel_shuffles(number) )
+        std::cout << e << " ";
+      std::cout << "\n";
+    } else if (asktype == "dc") {
+      std::cout << "dinner_count(" << number << ") = ";
+      std::cout << h.dinner_count(number) << "\n";
+    } else if (asktype == "ds") {
+      std::cout << "dinner_shuffles(" << number <<  ") = ";
+      for (auto e : h.dinner_shuffles(number))
+        std::cout << e << " ";
+      std::cout << "\n";
+    }
   }
 }
