@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-
 #include "timer.h"
 
 using std::vector;
@@ -33,7 +32,6 @@ class Arrangements {
   	thenames = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   }
 };
-
 
 // returns a vector of all the possible seating
 // combinations with n people in a panel
@@ -66,22 +64,18 @@ vector<string> Arrangements::panel_shuffles(int n) {
     second.push_back(str3);
 
     refMap.emplace(1, second);
-
     // generates seating combinations for n > 2
     // by referring to previous vectors in refMap
-    for (int i = 2; i < n; i++)
-    {
+    for (int i = 2; i < n; i++) {
     	vector<string> xi;
     	// combos for if n stays in their original seat
-    	for (int j = 0; j < refMap.at(i-1).size(); j++)
-    	{	
+    	for (int j = 0; j < refMap.at(i-1).size(); j++) {	
     		str1 = "";
     		str1 = refMap.at(i-1).at(j) + thenames.at(i);
     		xi.push_back(str1);
     	}
     	// combos for if n switches one to the left
-    	for (int k = 0; k < refMap.at(i-2).size(); k++)
-    	{
+    	for (int k = 0; k < refMap.at(i-2).size(); k++) {
     		str2 = "";
     		str2 = refMap.at(i-2).at(k) + thenames.at(i) + thenames.at(i-1);
     		xi.push_back(str2);
@@ -126,33 +120,18 @@ vector<string> Arrangements::panel_shuffles(int n) {
  	return v;
   } 
 
-double panel_count(int n) {
-  cout.precision(15);
-  vector<double> seats;
-  seats.push_back(1);
-  seats.push_back(2);
-  for (int i = 2; i <= n; i ++)
-  {
-  	seats.push_back(seats.at(i-1) + seats.at(i-2));
-  }
-   return seats.at(n-1);
-  }
-
-  // calculates the number of ways the panelists can be arranged
-  // if there are n panelists
+	// calculates the number of ways the panelists can be arranged
+	 // if there are n panelists
   double Arrangements::panel_count(int n) {
-  std::vector<double> seats;
-  seats.push_back(1);
-  seats.push_back(2);
-
-  //calculates the next number by referring to the previous 2 numbers
-  for (int i = 2; i <= n; i ++)
-  {
-  	seats.push_back(seats.at(i-1) + seats.at(i-2));
+	cout.precision(15);
+	vector<double> seats;
+	seats.push_back(1);
+	seats.push_back(2);
+	for (int i = 2; i <= n; i ++) {
+	  seats.push_back(seats.at(i-1) + seats.at(i-2));
+	}
+	return seats.at(n-1);
   }
-   cout.precision(15);
-   return seats.at(n-1);
-}
 
   // calculates the number of ways the dinner guests can be arranged
   // if there are n guests
@@ -164,8 +143,7 @@ double panel_count(int n) {
 	seats.push_back(9);
 
 	//calculates the next number by referring to the previous 2 numbers
-	for (int i = 4; i <= n; i++)
-	{
+	for (int i = 4; i <= n; i++) {
 	  seats.push_back(seats.at(i-1) + seats.at(i-2) -2);
 	}
 	cout.precision(15);
