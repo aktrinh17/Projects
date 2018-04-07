@@ -18,137 +18,147 @@ using std::unordered_map;
 
 class Arrangements {
  private:
-
  public:
-
-  explicit Arrangements(string thenames) {
-  	names = thenames;
+  string thenames;
+  Arrangements() {
+    thenames = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  }
+  explicit Arrangements(string names) {
+    thenames = names;
   }
   vector<string> panel_shuffles(int n);
   vector<string> dinner_shuffles(int n);
   double panel_count(int n);
   double dinner_count(int n);
-  Arrangements() {
-  	thenames = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  }
+  void errorChecker(int n);
 };
+
+// checks for if n > number of people
+void Arrangements::errorChecker(int n) {
+  if (n > thenames.length())
+    throw n;
+}
 
 // returns a vector of all the possible seating
 // combinations with n people in a panel
 vector<string> Arrangements::panel_shuffles(int n) {
-    vector<string> v;
-    // create a map for reference in generating 
-    // higher n seating combinations
-    unordered_map<int, vector<string>> refMap;
+  errorChecker(n);
+  vector<string> v;
+  // create a map for reference in generating
+  // higher n seating combinations
+  unordered_map<int, vector<string>> refMap;
 
-    // creates the first 2 vectors in the map
-    // to start the fibonacci-like sequence
-    string str1;
-    str1 = thenames.at(0);
+  // creates the first 2 vectors in the map
+  // to start the fibonacci-like sequence
+  string str1;
+  str1 = thenames.at(0);
 
-    vector<string> first;
-    first.push_back(str1);
+  vector<string> first;
+  first.push_back(str1);
 
-    refMap.emplace(0, first);
+  refMap.emplace(0, first);
 
-    string str2;
-    str2 += thenames.at(0);
-    str2 += thenames.at(1);
+  string str2;
+  str2 += thenames.at(0);
+  str2 += thenames.at(1);
 
-    string str3;
-    str3 += thenames.at(1);
-    str3 += thenames.at(0);
+  string str3;
+  str3 += thenames.at(1);
+  str3 += thenames.at(0);
 
-    vector<string> second;
-    second.push_back(str2);
-    second.push_back(str3);
+  vector<string> second;
+  second.push_back(str2);
+  second.push_back(str3);
 
-    refMap.emplace(1, second);
-    // generates seating combinations for n > 2
-    // by referring to previous vectors in refMap
-    for (int i = 2; i < n; i++) {
-    	vector<string> xi;
-    	// combos for if n stays in their original seat
-    	for (int j = 0; j < refMap.at(i-1).size(); j++) {	
-    		str1 = "";
-    		str1 = refMap.at(i-1).at(j) + thenames.at(i);
-    		xi.push_back(str1);
-    	}
-    	// combos for if n switches one to the left
-    	for (int k = 0; k < refMap.at(i-2).size(); k++) {
-    		str2 = "";
-    		str2 = refMap.at(i-2).at(k) + thenames.at(i) + thenames.at(i-1);
-    		xi.push_back(str2);
-    	}
-    	refMap.emplace(i, xi);
+  refMap.emplace(1, second);
+  // generates seating combinations for n > 2
+  // by referring to previous vectors in refMap
+  for (int i = 2; i < n; i++) {
+    vector<string> xi;
+    // combos for if n stays in their original seat
+    for (int j = 0; j < refMap.at(i - 1).size(); j++) {
+      str1 = "";
+      str1 = refMap.at(i - 1).at(j) + thenames.at(i);
+      xi.push_back(str1);
     }
-    v = refMap.at(n-1);
-    return v;
+    // combos for if n switches one to the left
+    for (int k = 0; k < refMap.at(i - 2).size(); k++) {
+      str2 = "";
+      str2 = refMap.at(i - 2).at(k) + thenames.at(i) + thenames.at(i - 1);
+      xi.push_back(str2);
+    }
+    refMap.emplace(i, xi);
   }
+  v = refMap.at(n - 1);
+  return v;
+}
 
-  // returns a vector of all the possible seating
-  // combinations with n people in a circular table
-  vector<string> Arrangements::dinner_shuffles(int n) {
-  	// the dinner arrangements are the panel seats with a few extra combos
-    vector<string> v = panel_shuffles(n);
-    string str; 
-    // the arrangements for n <= 2 is the same as panel
-    if (n > 2) {
-    	// checks for if the first letter and last letter are
-    	// the same as the original seating
-    	// if so, swap the first and last chars and keep the middle
-	    for (int i = 0; i < v.size(); i++) {
-	    	if (v.at(i).at(0) == thenames.at(0)) {
-	    		if (v.at(i).at(n-1) == thenames.at(n-1)) {
-	    		str = "";
-	    		str += v.at(i);
-	    		std::swap(str.at(0), str.at(n-1));
-	    		v.push_back(str);
-	    		}
-	    	}	
-	    }
-	    str = "";
-	    // original shifted to the left one
-	    str += thenames.substr(1, n-1) + thenames.at(0);
-	    v.push_back(str);
+// returns a vector of all the possible seating
+// combinations with n people in a circular table
+vector<string> Arrangements::dinner_shuffles(int n) {
+  errorChecker(n);
+  // the dinner arrangements are the panel arrangements with a few extra combos
+  vector<string> v = panel_shuffles(n);
+  string str;
+  // the extra seating combos are not needed unless n > 2
+  if (n > 2) {
+    // checks for if the first letter and last letter are
+    // the same as the original seating
+    // if so, swap the first and last chars and keep the middle
+    for (int i = 0; i < v.size(); i++) {
+      if (v.at(i).at(0) == thenames.at(0)) {
+        if (v.at(i).at(n - 1) == thenames.at(n - 1)) {
+          str = "";
+          str += v.at(i);
+          std::swap(str.at(0), str.at(n - 1));
+          v.push_back(str);
+        }
+      }
+    }
+    str = "";
+    // original shifted to the left one
+    str += thenames.substr(1, n - 1) + thenames.at(0);
+    v.push_back(str);
 
-	    str = "";
-	    // original shifted to the right one
-	    str += thenames.at(n-1) + thenames.substr(0,n-1);
-	    v.push_back(str);
-	}
- 	return v;
-  } 
-
-	// calculates the number of ways the panelists can be arranged
-	 // if there are n panelists
-  double Arrangements::panel_count(int n) {
-	cout.precision(15);
-	vector<double> seats;
-	seats.push_back(1);
-	seats.push_back(2);
-	for (int i = 2; i <= n; i ++) {
-	  seats.push_back(seats.at(i-1) + seats.at(i-2));
-	}
-	return seats.at(n-1);
+    str = "";
+    // original shifted to the right one
+    str += thenames.at(n - 1) + thenames.substr(0, n - 1);
+    v.push_back(str);
   }
+  return v;
+}
 
-  // calculates the number of ways the dinner guests can be arranged
-  // if there are n guests
-  double Arrangements::dinner_count(int n) {
-	std::vector<double> seats;
-	seats.push_back(1);
-	seats.push_back(2);
-	seats.push_back(6);
-	seats.push_back(9);
-
-	//calculates the next number by referring to the previous 2 numbers
-	for (int i = 4; i <= n; i++) {
-	  seats.push_back(seats.at(i-1) + seats.at(i-2) -2);
-	}
-	cout.precision(15);
-    return seats.at(n-1);
+// calculates the number of ways the panelists can be arranged
+// if there are n panelists
+double Arrangements::panel_count(int n) {
+  errorChecker(n);
+  cout.precision(15);
+  vector<double> seats;
+  seats.push_back(1);
+  seats.push_back(2);
+  // calculates the next number by referring to the previous 2 numbers
+  for (int i = 2; i <= n; i ++) {
+    seats.push_back(seats.at(i - 1) + seats.at(i - 2));
   }
+  return seats.at(n - 1);
+}
+
+// calculates the number of ways the dinner guests can be arranged
+// if there are n guests
+double Arrangements::dinner_count(int n) {
+  errorChecker(n);
+  std::vector<double> seats;
+  seats.push_back(1);
+  seats.push_back(2);
+  seats.push_back(6);
+  seats.push_back(9);
+  // calculates the next number by referring to the previous 2 numbers
+  for (int i = 4; i <= n; i++) {
+    seats.push_back(seats.at(i - 1) + seats.at(i - 2) - 2);
+  }
+  cout.precision(15);
+  return seats.at(n - 1);
+}
 
 // TESTING: leave this line and below as is.
 
@@ -172,7 +182,6 @@ void show_partial_result(string testname, vector<string> res, int n) {
               << ") = " << res.at(i) << "\n";
   }
 }
-
 
 const int COUNTLIM = 100;
 const int COUNTLIM_SMALL = 30;
