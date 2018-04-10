@@ -17,8 +17,8 @@ using std::sort;
 using std::unordered_map;
 
 class Arrangements {
- private:
- public:
+  private:
+  public:
   string thenames;
   Arrangements() {
     thenames = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -132,7 +132,6 @@ vector<string> Arrangements::dinner_shuffles(int n) {
 // if there are n panelists
 double Arrangements::panel_count(int n) {
   errorChecker(n);
-  cout.precision(15);
   vector<double> seats;
   seats.push_back(1);
   seats.push_back(2);
@@ -140,6 +139,7 @@ double Arrangements::panel_count(int n) {
   for (int i = 2; i <= n; i ++) {
     seats.push_back(seats.at(i - 1) + seats.at(i - 2));
   }
+  cout.precision(15);
   return seats.at(n - 1);
 }
 
@@ -147,7 +147,7 @@ double Arrangements::panel_count(int n) {
 // if there are n guests
 double Arrangements::dinner_count(int n) {
   errorChecker(n);
-  std::vector<double> seats;
+  vector<double> seats;
   seats.push_back(1);
   seats.push_back(2);
   seats.push_back(6);
