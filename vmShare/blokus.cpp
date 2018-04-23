@@ -114,9 +114,12 @@ int increment = 0;
 
 class Tile {
   public:
-    int ID = 100;
+    static int ID;
     int tileNum;
+    vector<string> tileLayoutData;
     static vector<Tile*> tiles;
+    Tile();
+    Tile(vector<string>);
     void show() const;  // print out tile in tilebox format
     void rotate();
     void flipud();
@@ -125,21 +128,26 @@ class Tile {
 
 //unordered_map<int, *Tile> tileBank;
 
-class Blokus {
+class Blokus : public Tile{
+  Tile first;
   public:
-
-    Blokus() {
-
-    }
 
     std::map<int, vector<string>> duplicates;
     // std::map<int, vector<string>> tilebank;
-    unordered_map<int, Tile> tileBank;
     vector<string> board;
     // int Tile::id = 100;
     int name = 100;
     Tile data;
-    Tile* find_tile(TileID);
+    /* // not sure how to iterate through the vector to find the tile
+    Tile* find_tile(TileID) {
+      for (int i = 0; i < tiles.at(i).size(); i++) {
+        if (tiles.at(i).tileNum == TileID)
+          return &tiles.at(i).tileLayoutData;
+      }
+    */
+
+    // this just returns a random tile when called to get past compile errors
+    Tile * find_tile(TileID); 
     void create_piece();
     void reset();
     void show_tiles() const;
@@ -148,11 +156,14 @@ class Blokus {
     void set_size(int);
 };
 
+int Tile::ID = 100;
+vector<Tile*> Tile::tiles;
+
 // default constructor
 Tile::Tile() {
   tileNum = ID;
   ID++;
-  Tiles.push_back(this);
+  tiles.push_back(this);
 }
 
 // constructor
@@ -160,6 +171,7 @@ Tile::Tile(vector<string> completeTile) {
   tileNum = ID;
   ID++;
   vector<string> tileLayoutData = completeTile;
+  tiles.push_back(this);
 }
 
 void Tile::show() const{
@@ -167,6 +179,11 @@ cout << "test";
 //  cout << TileID << "\n";
 //  for (loop through all of the strings of the vector for that id)
 //  cout <<
+  for (auto t: tiles) {
+    for (int i = 0; i < t -> tileLayoutData.size(); i++) {
+      cout << t -> tileLayoutData.at(i);
+    }
+  }
 }
 
 void Tile::rotate() {
@@ -181,13 +198,16 @@ void Tile::fliplr() {
 
 }
 
-/*Tile* Blokus::find_tile(TileID input) {
-
+Tile* Blokus::find_tile(TileID input) { 
+  for (Tile* t : tiles) {
+    if (t -> tileNum == input)
+      return t;
+  }
 //this should be the main priority as the rotate, flip, and show functions all rely on being able to generate a Tile*
 //to the correct instance of the tile that is being requested
 
-  return &SOMETHING;
-}*/
+ // return &SOMETHING; 
+}
 
 void Blokus::show_tiles() const {
   cout << "tile inventory \n"; //tile inventory is a line that is required by his examples to be printed
@@ -200,15 +220,24 @@ void Blokus::show_tiles() const {
 **
 **
 */
+
 }
 
+
 void Blokus::show_board() const {
+/*  
+  for (int i = 0; i < tileBoard.size(); i++) {
+    for (int j = 0; j < tileBoard.at(i).size(); j++) {
+      cout << tileBoard.at(i).at(j) << "\n";
+    }
+  }
+*/
 //this should be easier to figure out as it is called b.show_board()
 
 //so here we could just access the vector of strings directly and loop through each string and print
 //it row by row
 
-}
+} 
 
 void Blokus::play_tile(TileID, int, int) {
 
@@ -303,6 +332,7 @@ void Blokus::create_piece() {
             tileBank.insert(std::make_pair(ID, tileName_increment));
   */
 
+  Tile tileName_increment(polished);
 }
 
 
