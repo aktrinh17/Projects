@@ -124,30 +124,17 @@ class Tile {
     void rotate();
     void flipud();
     void fliplr();
+
 };
 
-//unordered_map<int, *Tile> tileBank;
-
-class Blokus : public Tile{
+class Blokus : public Tile {
   Tile first;
   public:
 
     std::map<int, vector<string>> duplicates;
-    // std::map<int, vector<string>> tilebank;
     vector<string> board;
-    // int Tile::id = 100;
-    int name = 100;
     Tile data;
-    /* // not sure how to iterate through the vector to find the tile
-    Tile* find_tile(TileID) {
-      for (int i = 0; i < tiles.at(i).size(); i++) {
-        if (tiles.at(i).tileNum == TileID)
-          return &tiles.at(i).tileLayoutData;
-      }
-    */
-
-    // this just returns a random tile when called to get past compile errors
-    Tile * find_tile(TileID); 
+    Tile * find_tile(TileID);
     void create_piece();
     void reset();
     void show_tiles() const;
@@ -163,81 +150,78 @@ vector<Tile*> Tile::tiles;
 Tile::Tile() {
   tileNum = ID;
   ID++;
-  tiles.push_back(this);
 }
 
 // constructor
 Tile::Tile(vector<string> completeTile) {
   tileNum = ID;
   ID++;
-  vector<string> tileLayoutData = completeTile;
-  tiles.push_back(this);
+  tileLayoutData = completeTile;
 }
 
 void Tile::show() const{
-cout << "test";
-//  cout << TileID << "\n";
-//  for (loop through all of the strings of the vector for that id)
-//  cout <<
-  for (auto t: tiles) {
-    for (int i = 0; i < t -> tileLayoutData.size(); i++) {
-      cout << t -> tileLayoutData.at(i);
-    }
+  cout << tileNum-3 << "\n";
+  for (auto row : tileLayoutData) {
+    cout << row << "\n";
   }
 }
 
+
 void Tile::rotate() {
+
+//vector<string> temp  = t-> tileLayoutData
+
+//perform the operations
+
+//vector<string> rotated;
+
+//tileLayoutData = rotated;
 
 }
 
 void Tile::flipud() {
 
+  vector<string> tile = tileLayoutData;
+  int range =  tile.size();
+  for (int i = 0; i <= range/2-1; i++) {
+    std::swap(tile.at(0+i), tile.at(range-1-i));
+  }
+  //tileLayoutdata = tile; this would replace the old tile with the new flipped tile
 }
 
 void Tile::fliplr() {
 
+
 }
 
-Tile* Blokus::find_tile(TileID input) { 
+
+vector<Tile*> pointerlist; //index 0 would correspond to ID 100
+
+//take in the input, process the tile and create the vector<string>
+
+Tile* Blokus::find_tile(TileID input) {
   for (Tile* t : tiles) {
-    if (t -> tileNum == input)
+    if (t -> tileNum == input+3)
       return t;
   }
-//this should be the main priority as the rotate, flip, and show functions all rely on being able to generate a Tile*
-//to the correct instance of the tile that is being requested
-
- // return &SOMETHING; 
 }
 
 void Blokus::show_tiles() const {
-  cout << "tile inventory \n"; //tile inventory is a line that is required by his examples to be printed
- // for (auto tile : tilebank)
- //tile->show();
-/* print it out in the following format with the TileID first, then the tile
-102
-*
-101
-**
-**
-*/
-
+  cout << "tile inventory \n";
+  for (auto t : tiles) {
+    cout << tileNum << "\n";
+    for (int i = 0; i < tileLayoutData.size(); i++) {
+      cout << tileLayoutData.at(i);
+    }
+  }
 }
 
 
 void Blokus::show_board() const {
-/*  
-  for (int i = 0; i < tileBoard.size(); i++) {
-    for (int j = 0; j < tileBoard.at(i).size(); j++) {
-      cout << tileBoard.at(i).at(j) << "\n";
-    }
+  for (auto row : board) {
+    cout << row << "\n";
   }
-*/
-//this should be easier to figure out as it is called b.show_board()
-
-//so here we could just access the vector of strings directly and loop through each string and print
-//it row by row
-
-} 
+}
 
 void Blokus::play_tile(TileID, int, int) {
 
@@ -249,14 +233,14 @@ void Blokus::reset(){
   duplicates.clear();
   board.clear();
   set_size(0);// might be unnecassry depending on how the clear command works for board.clear()
-  name = 100;//intended to reset the value of name in the blokus class to 100
+//  ID = 100;
 }
 
 void Blokus::set_size(int newsize) {//board is a vector of strings stored in the Blokus class that represents the board
   if (board.size() == 0) { //checks if the board exists/is size 0
     string row; //creates a string that represents the row by appending a certain length of this default string
     row.append("......................................",newsize); //where newsize is the size of the board
-    for (int i = 0; i <= newsize; i++) {
+    for (int i = 0; i < newsize; i++) {
       board.push_back(row); //pushes back this string that is newsize characters long until the vector has newsize number of elements
     }
   } else {
@@ -274,37 +258,41 @@ void Blokus::set_size(int newsize) {//board is a vector of strings stored in the
 }
 
 void Blokus::create_piece() {
+  int counter = 0;
+  vector<string> rough;
+  vector<string> polished;
+
   int tilesize;
   cin >> tilesize;
-
-  int index = tilesize; //this term index correpsonds to the first column that contains a *, we set it ot the max size first and then reduce it
-  //as we check each row inputted
+  int index = tilesize;
 
   string filler;
   filler.append("........................", tilesize);
 
-  vector<string> rough;
-  vector<string> polished;
-
   for (int i = 0; i < tilesize; i++) { //each time this loop occurs it takes in the next row from CIN
     string row;
     cin >> row;
-    if (row.size() != tilesize)
-      //throw invalid if the row isn't the right size
-    if (row.find("*")!=std::string::npos) { //this checks that there is a * in the row, and pushes it back into a vector if it does, otherwise it ignores that row
-    //this is intended to make sure that the tile is as far up as possible, but there could be issues if there is an empty row in the middle of creating a tile
-    //would only be an issue when the user is trying to make two tiles in one command, as any blank lines are ignored and are not saved
-      rough.push_back(row);
-      if (row.find("*") < index) //determines the first column that contains a * by checking if the location of the first * in the row is less than the index
-      //the index starts at the end of the board, and is shifted left/decreased if the location of the first * is less than the location of all previous *s
+    if (row.size() != tilesize){
+      cout << "invalid row size" << "\n";
+      return;
+    }
+    if (counter == 0) {
+      if (row.find("*")!=std::string::npos) {
+        rough.push_back(row);
+        counter++;
+        if (row.find("*") < index)
         index = row.find("*");
+      }
+    } else {
+    rough.push_back(row);
+    if (row.find("*") < index)
+      index = row.find("*");
     }
   }
 
   //the following occurs after the entire tile has been read in from CIN
 
-  for (auto i : rough) { //this function takes the rough vector representing the tile
-  //and trims off any empty columns to ensure that the tile is as far left as possible
+  for (auto i : rough) {
     string clipped = i.substr(index);
     clipped.append("....................",index); //this then appends decimal points to the end of
     //each row to ensure that the tile is of proper width, we haven't corrected the height yet
@@ -317,22 +305,12 @@ void Blokus::create_piece() {
 
   //here I would make the 8 alternate orientations and store those in a seperate map based on the weight of the tile to error check for duplicates
 
-  //Next we need to figure out how to create an instance of the Tile class and then assign the data to that instance.
-  /*Tile objectname;
-  objectname.tilebank = polished;*/
-  //need to figure out how to change the name of the Tile class each time
+  for (auto row : polished) {
+    cout << row << "\n";
+  }
 
-  //this used to be a map<int vector<string>> where I would emplace the vector into the position correpsonding to the ID
-  //tilebank.emplace(ID, polished);
+  tiles.push_back(new Tile(polished));
 
-  /*
-            // creates a unique tile object
-            Tile tileName_increment(ID, polished); 
-            // stores the tile in a map
-            tileBank.insert(std::make_pair(ID, tileName_increment));
-  */
-
-  Tile tileName_increment(polished);
 }
 
 
