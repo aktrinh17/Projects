@@ -208,14 +208,13 @@ Tile* Blokus::find_tile(TileID input) {
 
 void Blokus::show_tiles() const {
   cout << "tile inventory \n";
-  for (auto t : tiles) {
-    cout << tileNum << "\n";
-    for (int i = 0; i < tileLayoutData.size(); i++) {
-      cout << tileLayoutData.at(i);
+  for (int i = 0; i < tiles.size(); i++) {
+    cout << (tiles.at(i) -> tileNum)-3 << "\n";
+    for (int j = 0; j < (tiles.at(i) -> tileLayoutData).size(); j++) {
+      cout << (tiles.at(i) -> tileLayoutData).at(j) << "\n";
     }
   }
 }
-
 
 void Blokus::show_board() const {
   for (auto row : board) {
@@ -310,7 +309,6 @@ void Blokus::create_piece() {
   }
 
   tiles.push_back(new Tile(polished));
-
 }
 
 
