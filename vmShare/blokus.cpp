@@ -131,7 +131,6 @@ class Blokus : public Tile {
   Tile first;
   public:
 
-    std::map<int, vector<string>> duplicates;
     vector<string> board;
     Tile data;
     Tile * find_tile(TileID);
@@ -169,29 +168,39 @@ void Tile::show() const{
 
 void Tile::rotate() {
 
-//vector<string> temp  = t-> tileLayoutData
+vector<string> tile = tileLayoutData;
+  int range = tile.size(); // number of rows
+  int lastChar = tile.at(0).size(); // size of row
 
-//perform the operations
-
-//vector<string> rotated;
-
-//tileLayoutData = rotated;
-
+  // moves from rightmost column to left
+  for (int i = 0; i < range; i++) {
+    // moves from topmost row to bottom
+    for (int j = 0; j < range; j++)
+      tile.at(i) += tileLayoutData.at(j).at(lastChar - i - 1); 
+  }
+  tileLayoutData = tile;
 }
 
 void Tile::flipud() {
-
   vector<string> tile = tileLayoutData;
   int range =  tile.size();
   for (int i = 0; i <= range/2-1; i++) {
     std::swap(tile.at(0+i), tile.at(range-1-i));
   }
-  //tileLayoutdata = tile; this would replace the old tile with the new flipped tile
+  tileLayoutData = tile;
 }
 
 void Tile::fliplr() {
-
-
+  vector<string> tile = tileLayoutData;
+  for (int i = 0; i < tile.size(); i++) {
+    string row = tile.at(i);
+    int length =  row.size();
+    for (int j = 0; j <= length/2-1; j++) {
+      std::swap(row.at(0+j), row.at(length-1-j));
+      tile.at(i) = row;
+    }
+  }
+  tileLayoutData = tile;
 }
 
 
@@ -214,7 +223,9 @@ void Blokus::show_tiles() const {
       cout << (tiles.at(i) -> tileLayoutData).at(j) << "\n";
     }
   }
+
 }
+
 
 void Blokus::show_board() const {
   for (auto row : board) {
@@ -222,17 +233,36 @@ void Blokus::show_board() const {
   }
 }
 
-void Blokus::play_tile(TileID, int, int) {
+void Blokus::play_tile(TileID id, int r, int c) {
+  vector<string> tile = tiles.at(id-100) -> tileLayoutData;
+  int maxsize = board.size();
+  cout << tile.size();
 
-
+  for (int i = 0; i < tile.size(); i++) { //loop through each row
+    string boardrow = board.at(i+r);
+    string tilerow = tile.at(i);
+    cout << tilerow;
+    for (int j = 0; j < tile.size(); j++) { //check each piece to see if there is already a * in that spot
+      if (j > maxsize) { //special checking for when the board could hang off the edge
+        if (char(tilerow.at(j)) == '.')
+          cout << "no problemo";
+        if (char(tilerow.at(j)) == '*')
+          cout << "board hanging bad";
+      } else {
+        if ((char(tilerow.at(j)) == '*') && (char(boardrow.at(j+c))== '8')) {
+          cout << "overlap" << "\n";
+        } else if ((char(tilerow.at(j)) == '*') && (char(boardrow.at(j+c)) == '.')) {
+          cout << "tile played";
+          board.at(i).at(j+c-1) = '*';
+        }
+      }
+      //no conflict because ..... only
+    }
+  }
 }
 
-void Blokus::reset(){
-  //need to clear all instances of the Tile class
-  duplicates.clear();
+void Blokus::reset(){ //this needs to be written completely
   board.clear();
-  set_size(0);// might be unnecassry depending on how the clear command works for board.clear()
-//  ID = 100;
 }
 
 void Blokus::set_size(int newsize) {//board is a vector of strings stored in the Blokus class that represents the board
@@ -304,11 +334,8 @@ void Blokus::create_piece() {
 
   //here I would make the 8 alternate orientations and store those in a seperate map based on the weight of the tile to error check for duplicates
 
-  for (auto row : polished) {
-    cout << row << "\n";
-  }
-
   tiles.push_back(new Tile(polished));
+
 }
 
 
