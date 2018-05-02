@@ -1,12 +1,12 @@
 // Copyright 2018 Alexander Trinh aktrinh@bu.edu
 // Copyright 2018 Zach Halvorson zthalv@bu.edu
-#include <iostream>
-#include <string>
-#include <map>
-#include <vector>
 #include <algorithm>
-#include <utility>
+#include <iostream>
+#include <map>
+#include <string>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 // tuple, utility, set, unordered_map, unordered_set,
 
@@ -106,40 +106,39 @@ RESIZE: make the board bigger or smaller. When smaller,
 - end of command glossary -
 */
 
-
 typedef int TileID;
-
 
 int increment = 0;
 
 class Tile {
-  public:
-    static int ID;
-    int tileNum;
-    vector<string> tileLayoutData;
-    static vector<Tile*> tiles;
-    Tile();
-    Tile(vector<string>);
-    void show() const;  // print out tile in tilebox format
-    void rotate();
-    void flipud();
-    void fliplr();
-
+ public:
+  static int ID;
+  int tileNum;
+  vector<string> tileLayoutData;
+  static vector<Tile*> tiles;
+  Tile();
+  explicit Tile(vector<string>);
+  void show() const;  // print out tile in tilebox format
+  void rotate();
+  void flipud();
+  void fliplr();
 };
 
 class Blokus : public Tile {
   Tile first;
-  public:
-
-    vector<string> board;
-    Tile data;
-    Tile * find_tile(TileID);
-    void create_piece();
-    void reset();
-    void show_tiles() const;
-    void show_board() const;
-    void play_tile(TileID, int, int);
-    void set_size(int);
+ public:
+  map<int, map<int, vector<string>>> duplicates;
+  vector<string> board;
+  vector<string> hangboard;
+  char hangchar = 'a';
+  Tile data;
+  Tile * find_tile(TileID);
+  void create_piece();
+  void reset();
+  void show_tiles() const;
+  void show_board() const;
+  void play_tile(TileID, int, int);
+  void set_size(int);
 };
 
 int Tile::ID = 100;
@@ -158,36 +157,103 @@ Tile::Tile(vector<string> completeTile) {
   tileLayoutData = completeTile;
 }
 
-void Tile::show() const{
-  cout << tileNum-3 << "\n";
+void Tile::show() const {
+  if (Tile::ID == 103)  // this means no tiles exist
+    return;
+  if (abs(tileNum - 3) > Tile::ID - 4)
+    return;
   for (auto row : tileLayoutData) {
     cout << row << "\n";
   }
 }
 
+vector<string> shifter(vector<string> input) {
+  int counter = 0;
+  vector<string> rough;
+  vector<string> polished;
+
+  int tilesize = input.size();
+  int index = tilesize;
+
+  string filler;
+  for (int i = 0; i < tilesize; i++) {
+    filler.append(".", 1);
+  }
+  for (int i = 0; i < tilesize; i++) {
+    string row = input.at(i);
+    if (counter == 0) {
+      if (row.find("*") != std::string::npos) {
+        rough.push_back(row);
+        counter++;
+        if (row.find("*") < index)
+          index = row.find("*");
+      }
+    } else {
+      rough.push_back(row);
+      if (row.find("*") < index)
+        index = row.find("*");
+    }
+  }
+  for (auto i : rough) {
+    string clipped = i.substr(index);
+    for (int i = 0; i < index; i++) {
+      clipped.append(".", 1);
+    }
+    polished.push_back(clipped);
+  }
+  while (polished.size() != tilesize) {
+    polished.push_back(filler);
+  }
+  return polished;
+}
+
+vector<string> rotater(vector<string> input) {
+  vector<string> tile = input;
+  int lastChar = tile.at(0).size();
+  int range = tile.size();
+  for (int i = 0; i < input.size(); i++) {
+    for (int j = 0; j < input.size(); j++) {
+      tile.at(i) += input.at(j).at(lastChar - i - 1);
+    }
+    tile.at(i).erase(0, range);
+  }
+  return shifter(tile);
+}
 
 void Tile::rotate() {
+  vector<string> tile = tileLayoutData;
+  //  size of the rows
+  int lastChar = tile.at(0).size();
+  int range = tile.size();
 
-vector<string> tile = tileLayoutData;
-  int range = tile.size(); // number of rows
-  int lastChar = tile.at(0).size(); // size of row
-
-  // moves from rightmost column to left
-  for (int i = 0; i < range; i++) {
+  //  moves from rightmost column to left
+  for (int i = 0; i < tileLayoutData.size(); i++) {
     // moves from topmost row to bottom
-    for (int j = 0; j < range; j++)
-      tile.at(i) += tileLayoutData.at(j).at(lastChar - i - 1); 
+    for (int j = 0; j < tileLayoutData.size(); j++) {
+      tile.at(i) += tileLayoutData.at(j).at(lastChar - i - 1);
+    }
+    //  remove the old string formation
+    tile.at(i).erase(0, range);
   }
-  tileLayoutData = tile;
+  tileLayoutData = shifter(tile);
+}
+
+vector<string> flipperud(vector<string> input) {
+  vector<string> tile = input;
+  int range =  tile.size();
+  for (int i = 0; i <= range / 2 - 1; i++) {
+    std::swap(tile.at(0 + i), tile.at(range - 1 - i));
+  }
+  return tile;
 }
 
 void Tile::flipud() {
   vector<string> tile = tileLayoutData;
   int range =  tile.size();
-  for (int i = 0; i <= range/2-1; i++) {
-    std::swap(tile.at(0+i), tile.at(range-1-i));
+  for (int i = 0; i <= range / 2 - 1; i++) {
+    std::swap(tile.at(0 + i), tile.at(range - 1 - i));
   }
-  tileLayoutData = tile;
+  tileLayoutData = shifter(tile);
 }
 
 void Tile::fliplr() {
@@ -195,37 +261,36 @@ void Tile::fliplr() {
   for (int i = 0; i < tile.size(); i++) {
     string row = tile.at(i);
     int length =  row.size();
-    for (int j = 0; j <= length/2-1; j++) {
-      std::swap(row.at(0+j), row.at(length-1-j));
+    for (int j = 0; j <= length / 2 - 1; j++) {
+      std::swap(row.at(0 + j), row.at(length - 1 - j));
       tile.at(i) = row;
     }
   }
-  tileLayoutData = tile;
+  tileLayoutData = shifter(tile);
 }
 
-
-vector<Tile*> pointerlist; //index 0 would correspond to ID 100
-
-//take in the input, process the tile and create the vector<string>
+vector<Tile*> pointerlist;  // index 0 would correspond to ID 100
 
 Tile* Blokus::find_tile(TileID input) {
+  /*  if (input < 100)
+      return nullptr;
+    if (input > Tile::ID)
+      return nullptr;*/
   for (Tile* t : tiles) {
-    if (t -> tileNum == input+3)
+    if (t -> tileNum == input + 3)
       return t;
   }
 }
 
 void Blokus::show_tiles() const {
-  cout << "tile inventory \n";
+  cout << "tile inventory\n";
   for (int i = 0; i < tiles.size(); i++) {
-    cout << (tiles.at(i) -> tileNum)-3 << "\n";
+    cout << (tiles.at(i) -> tileNum) - 3 << "\n";
     for (int j = 0; j < (tiles.at(i) -> tileLayoutData).size(); j++) {
       cout << (tiles.at(i) -> tileLayoutData).at(j) << "\n";
     }
   }
-
 }
-
 
 void Blokus::show_board() const {
   for (auto row : board) {
@@ -234,60 +299,204 @@ void Blokus::show_board() const {
 }
 
 void Blokus::play_tile(TileID id, int r, int c) {
-  vector<string> tile = tiles.at(id-100) -> tileLayoutData;
-  int maxsize = board.size();
-  cout << tile.size();
+  if (id < 100) {
+    cout << id << " not played" << "\n";
+    return;
+  }
 
-  for (int i = 0; i < tile.size(); i++) { //loop through each row
-    string boardrow = board.at(i+r);
-    string tilerow = tile.at(i);
-    cout << tilerow;
-    for (int j = 0; j < tile.size(); j++) { //check each piece to see if there is already a * in that spot
-      if (j > maxsize) { //special checking for when the board could hang off the edge
-        if (char(tilerow.at(j)) == '.')
-          cout << "no problemo";
-        if (char(tilerow.at(j)) == '*')
-          cout << "board hanging bad";
-      } else {
-        if ((char(tilerow.at(j)) == '*') && (char(boardrow.at(j+c))== '8')) {
-          cout << "overlap" << "\n";
-        } else if ((char(tilerow.at(j)) == '*') && (char(boardrow.at(j+c)) == '.')) {
-          cout << "tile played";
-          board.at(i).at(j+c-1) = '*';
+  if (id - 100 >= tiles.size()) {
+    cout << id << " not played" << "\n";
+    return;
+  }
+
+  vector<string> tile = tiles.at(id - 100) -> tileLayoutData;
+  int maxsize = board.size();
+  bool overlapindicator = false;
+  r++;
+  c++;
+
+  for (int i = 0; i < tile.size(); i++) {
+    for (int j = 0; j < tile.size(); j++) {
+      if (i + r > maxsize) {
+        if (static_cast<char>(tile.at(i).at(j)) == '*') {
+          cout << id << " not played" << "\n";
+          return;
+        }
+      } else if (j + c > maxsize) {
+        if (static_cast<char>(tile.at(i).at(j)) == '*') {
+          cout << id << " not played" << "\n";
+          return;
         }
       }
-      //no conflict because ..... only
     }
+  }
+
+  for (int i = 0; i < tile.size(); i++) {
+    for (int j = 0; j < tile.size(); j++) {
+      if ((i + r <= maxsize) && (j + c <= maxsize)) {
+        string boardrow = board.at(i + r - 1);
+        string tilerow = tile.at(i);
+        if ((static_cast<char>(tilerow.at(j)) == '*') &&
+            (static_cast<char>(boardrow.at(j + c - 1)) == '*')) {
+          overlapindicator = true;
+          cout << id << " not played" << "\n";
+        }
+      }
+    }
+  }
+  if (!overlapindicator) {
+    for (int i = 0; i < tile.size(); i++) {
+      for (int j = 0; j < tile.size(); j++) {
+        if ((i + r <= maxsize) && (j + c <= maxsize)) {
+          string boardrow = board.at(i + r - 1);
+          string tilerow = tile.at(i);
+          if (static_cast<char>(tilerow.at(j) == '*')) {
+            board.at(i + r - 1).at(c + j - 1) = '*';
+            hangboard.at(i + r - 1).at(c + j - 1) = hangchar;
+          }
+        }
+      }
+    }
+    cout << "played " << id << "\n";
+    hangchar++;
   }
 }
 
-void Blokus::reset(){ //this needs to be written completely
+void Blokus::reset() {
   board.clear();
+  tiles.clear();
+  duplicates.clear();
+  hangchar = 'a';
+  Tile::ID = 103;
+  cout << "game reset" << "\n";
 }
 
-void Blokus::set_size(int newsize) {//board is a vector of strings stored in the Blokus class that represents the board
-  if (board.size() == 0) { //checks if the board exists/is size 0
-    string row; //creates a string that represents the row by appending a certain length of this default string
-    row.append("......................................",newsize); //where newsize is the size of the board
+void Blokus::set_size(int newsize) {
+  vector<string> smaller;
+  if (board.size() == 0) {  // checks if the board exists/is size 0
+    string row;
     for (int i = 0; i < newsize; i++) {
-      board.push_back(row); //pushes back this string that is newsize characters long until the vector has newsize number of elements
+      row.append(".", 1);
     }
-  } else {
-    int current = board.size();
-    int grow = newsize - current; //will only work for making the board larger
-    for (string& row : board) { //loops through the existing board and adds on periods to extend the board horizontally
-      row.append("........................", grow);
-    }
-    for (int i = current; i < newsize; i++) { //this adds on the rows at the bottom where the board didn't exist to extend it vertically downwards
-      string row;
-      row.append("......................................",newsize);
+    for (int i = 0; i < newsize; i++) {
       board.push_back(row);
+      hangboard.push_back(row);  // pushes back this string that is newsize
+      // characters long until the vector has newsize number of elements
+    }
+  } else if (newsize > board.size()) {
+    int current = board.size();
+    int grow = newsize - current;  // only for making the board larger
+    for (string& row : board) {  // loops through the existing board and
+      // adds on periods to extend the board horizontally
+      for (int i = 0; i < grow; i++) {
+        row.append(".", 1);
+      }
+    }
+    for (string& row : hangboard) {  // loops through the existing board and
+      // adds on periods to extend the board horizontally
+      for (int i = 0; i < grow; i++) {
+        row.append(".", 1);
+      }
+    }
+    for (int i = current; i < newsize; i++) {  // this adds on the rows at
+      string row;
+      for (int i = 0; i < newsize; i++) {
+        row.append(".", 1);
+      }
+      board.push_back(row);
+      hangboard.push_back(row);
+    }
+  } else {  // this is the resizing for smaller function
+    for (int i = 0; i < newsize; i++) {  // create the smaller board no analysis
+      string temp  = hangboard.at(i).substr(0, newsize);
+      smaller.push_back(temp);
+    }
+
+    for (auto row : hangboard) {  // deletes hanging tiles off the right
+      for (int i = newsize; i < board.size(); i++) {
+        if (row.at(i) != '.') {
+          for (int j = 0; j < newsize; j++) {
+            for (int k = 0; k < newsize; k++) {
+              if (smaller.at(j).at(k) == row.at(i))
+                smaller.at(j).at(k) = '.';
+            }
+          }
+        }
+      }
+    }
+    for (int i = newsize; i < board.size(); i++) {  // fixes the bottom
+      for (int j = 0; j < newsize; j++) {
+        if (hangboard.at(i).at(j) != '.') {
+          for (int k = 0; k < smaller.size(); k++) {
+            for (int l = 0; l < smaller.size(); l++) {
+              if (smaller.at(k).at(l) == hangboard.at(i).at(j))
+                smaller.at(k).at(l) = '.';
+            }
+          }
+        }
+      }
+    }
+    for (int i = 0; i < newsize; i++) {
+      for (int j = 0; j < newsize; j++) {
+        if (smaller.at(i).at(j) != '.')
+          smaller.at(i).at(j) = '*';
+      }
+    }
+    board = smaller;
+  }
+}
+
+map<int, vector<string>> duplicategen(vector<string> start) {
+  map<int, vector<string>> gen;
+  gen.insert(std::pair<int, vector<string>>(1, start));
+  gen.insert(std::pair<int, vector<string>>(2, shifter(flipperud(start))));
+  gen.insert(std::pair<int, vector<string>>(3, rotater(start)));
+  gen.insert(std::pair<int, vector<string>>(4, shifter(flipperud(gen.at(3)))));
+  gen.insert(std::pair<int, vector<string>>(5, rotater(gen.at(3))));
+  gen.insert(std::pair<int, vector<string>>(6, shifter(flipperud(gen.at(5)))));
+  gen.insert(std::pair<int, vector<string>>(7, rotater(gen.at(5))));
+  gen.insert(std::pair<int, vector<string>>(8, shifter(flipperud(gen.at(7)))));
+  return gen;
+}
+
+bool disconnectedchecker(vector<string> polished) {
+  vector<string> tile  = polished;
+  vector<int> above, current, valid;
+
+  for (int i = 0; i < tile.size() - 1; i++) {
+    for (int j = 0; j < tile.size(); j++) {
+      if (static_cast<char>(tile.at(i).at(j)) == '*') {
+        above.push_back(j);
+      }
+      if (static_cast<char>(tile.at(i + 1).at(j)) == '*') {
+        current.push_back(j);
+      }
+    }
+    valid = above;
+    for (int index : current) {
+      if (std::find(valid.begin(), valid.end(), index) == valid.end()) {
+        if (std::find(current.begin(), current.end(), index - 1)
+            != current.end()) {
+          valid.push_back(index);
+        }
+        if (std::find(current.begin(), current.end(), index + 1)
+            != current.end()) {
+          valid.push_back(index);
+        }
+      }
+    }
+    for (int index : current) {
+      if (std::find(valid.begin(), valid.end(), index) == valid.end()) {
+        return true;
+      }
     }
   }
+  return false;
 }
 
 void Blokus::create_piece() {
   int counter = 0;
+  bool isempty = true;
   vector<string> rough;
   vector<string> polished;
 
@@ -296,48 +505,103 @@ void Blokus::create_piece() {
   int index = tilesize;
 
   string filler;
-  filler.append("........................", tilesize);
+  for (int i = 0; i < tilesize; i++) {
+    filler.append(".", 1);
+  }
 
-  for (int i = 0; i < tilesize; i++) { //each time this loop occurs it takes in the next row from CIN
+  for (int i = 0; i < tilesize; i++) {  // each time this loop occurs it takes
+    // in the next row from CIN
     string row;
     cin >> row;
-    if (row.size() != tilesize){
-      cout << "invalid row size" << "\n";
+    if (row.size() != tilesize) {
+      cout << "invalid tile" << "\n";
       return;
     }
+
     if (counter == 0) {
-      if (row.find("*")!=std::string::npos) {
+      if (row.find("*") != std::string::npos) {
         rough.push_back(row);
         counter++;
+        isempty = false;
         if (row.find("*") < index)
-        index = row.find("*");
+          index = row.find("*");
       }
     } else {
-    rough.push_back(row);
-    if (row.find("*") < index)
-      index = row.find("*");
+      rough.push_back(row);
+      if (row.find("*") < index)
+        index = row.find("*");
     }
   }
-
-  //the following occurs after the entire tile has been read in from CIN
-
+  // the following occurs after the entire tile has been read in from CIN
   for (auto i : rough) {
     string clipped = i.substr(index);
-    clipped.append("....................",index); //this then appends decimal points to the end of
-    //each row to ensure that the tile is of proper width, we haven't corrected the height yet
+    for (int i = 0; i < index; i++) {
+      clipped.append(".", 1);
+    }
     polished.push_back(clipped);
   }
-  while (polished.size() != tilesize) { //this ensures that the tile is of the proper height by making
-  //sure that the vector has the same number of elements as the tilesize
-    polished.push_back(filler); //pushes back a row of decimal points of the proper width until the tile is now square
+  while (polished.size() != tilesize) {
+    polished.push_back(filler);
+  }
+  for (int i = 0; i < tilesize; i++) {  // this makes sure that
+    // the tile only contains * or .
+    for (int j = 0; j < tilesize; j++) {
+      if (polished.at(i).at(j) != '*') {
+        if (polished.at(i).at(j) != '.') {
+          cout << "invalid tile" << "\n";
+          return;
+        }
+      }
+    }
+  }
+  if (isempty) {
+    cout << "invalid tile" << "\n";
+    return;
   }
 
-  //here I would make the 8 alternate orientations and store those in a seperate map based on the weight of the tile to error check for duplicates
+  if (disconnectedchecker(polished)) {
+    cout << "disconnected tile discarded" << "\n";
+    return;
+  }
+  //..*
+  //**.
+  //... is valid
+
+  //..*
+  //*..
+  //... is discarded
+
+  vector<string> standardized;
+  for (auto row : polished) {
+    while (row.size() != 10) {
+      row.append(".", 1);
+    }
+    standardized.push_back(row);
+  }
+  while (standardized.size() != 10) {
+    standardized.push_back("..........");
+  }
+  if (duplicates.size() != 0) {
+    for (auto const & outside : duplicates) {
+      int currentID = outside.first;
+      map<int, vector<string>> tiles = outside.second;
+      for (auto const & inside : tiles) {
+        if (standardized == inside.second) {
+          cout << "duplicate of " << currentID << " discarded" << "\n";
+          return;
+        }
+      }
+    }
+    duplicates.insert(std::pair<int, map<int, vector<string>>>(Tile::ID - 3,
+                      duplicategen(standardized)));
+  } else {
+    duplicates.insert(std::pair<int, map<int, vector<string>>>(Tile::ID - 3,
+                      duplicategen(standardized)));
+  }
 
   tiles.push_back(new Tile(polished));
-
+  cout << "created tile " << Tile::ID - 4 << "\n";
 }
-
 
 // MAIN. Do not change the below.
 
@@ -351,7 +615,7 @@ int main() {
     if (command == "quit")  {
       break;
     } else if (command == "//") {
-      getline(cin,command);
+      getline(cin, command);
     } else if (command == "board") {
       b.show_board();
     } else if (command == "create") {
