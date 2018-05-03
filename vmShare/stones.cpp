@@ -226,15 +226,15 @@ int main() {
   while (true) {
     Collision* c = get_next_collision(&stones);//this line deletes/doesn't create the right x position for one of our two stones
 
-    if (!c.valid()) break;
+    if (!c->valid()) break;
 
-    double newtime = c.time;
+    double newtime = c->time;
     for (auto & s : stones)
       s.move(newtime);
     overall_time += newtime;
     cout << "\ntime of event: " << overall_time << "\n";
      cout << "colliding " << c;
-    c.one->collide(c.two);
+    c->one->collide(c->two);
     show_stones(stones);
   }
 }
