@@ -224,7 +224,7 @@ int main() {
 
   cout << "\nHere are the collision events.\n";
   while (true) {
-    Collision c* = get_next_collision(&stones);//this line deletes/doesn't create the right x position for one of our two stones
+    Collision* c = get_next_collision(&stones);//this line deletes/doesn't create the right x position for one of our two stones
 
     if (!c.valid()) break;
 
