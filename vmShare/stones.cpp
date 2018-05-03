@@ -133,8 +133,8 @@ class Stone {
 
 class Collision {
  public:
-  Stone* one;
-  Stone* two;
+  Stone* one = new Stone;
+  Stone* two = new Stone;
   double time;
 
   bool valid() {
@@ -225,7 +225,7 @@ int main() {
   cout << "\nHere are the collision events.\n";
   while (true) {
     Collision* c = get_next_collision(&stones);//this line deletes/doesn't create the right x position for one of our two stones
-
+    cout << c->one->pos << "TEST" << "\n";
     if (!c->valid()) break;
 
     double newtime = c->time;
@@ -233,7 +233,7 @@ int main() {
       s.move(newtime);
     overall_time += newtime;
     cout << "\ntime of event: " << overall_time << "\n";
-     cout << "colliding " << c;
+     cout << "colliding " << c;                     
     c->one->collide(c->two);
     show_stones(stones);
   }
