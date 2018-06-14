@@ -90,14 +90,24 @@
     <ul>
       <h3>Enter each participant in the box</h3>
     </ul>
-    	<!-- <label>Add Challenjour</label> -->
-    	<button style = "background-color:darkred">Add Challenjour</button>
-    	<input type = "text"
-    		id = "myEnter"
-    		value = "Enter Here" />
+      <form action = "/action_page.php">
+      	<input type ="text" name ="enteredName" placeholder=">_<">
+      </form>
+    <p id="partic">change</p>
+    <button type="button" onclick="count()" 
+    style ="background-color:darkred" 
+    onmouseover="this.style.color='black';"
+    onmouseout="this.style.color='white';" >Add Challenjour</button>
+    <script>
+    var counting = 1;
+      function count() {
+
+          document.getElementById("partic").innerHTML="Number of Challenjours: " + counting++;
+      }
+    </script>
   </p>
   <p>
-  	<button style = "background-color:purple">Create Bracket</button>
+  	<input type ="submit" value ="Create Bracket" style ="background-color:purple">
   </p>
   </div>
 </div>
