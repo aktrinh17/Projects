@@ -1,0 +1,25 @@
+// Copyright 2018 Alexander Trinh aktrinh@bu.edu
+#include <iostream>
+
+int main() {
+  int runSum;
+  int i;
+  while (i != 0) {
+    std::cin >> i;
+    if (i == 0)
+    break;
+    runSum = 1;
+    printf("%d: 1", i);
+    for (int j = 2; j <= i / 2; j++) {
+      if ((i % j) == 0) {
+        printf("+%d", j);
+        runSum += j;
+      }
+    }
+    if (i != 0) {
+      printf(" = %d", runSum);
+      printf("\n");
+    }
+  }
+  return 0;
+}

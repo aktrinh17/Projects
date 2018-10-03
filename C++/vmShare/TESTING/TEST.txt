@@ -1,0 +1,157 @@
+// checks if a string is a valid word
+bool is_word(string s) {
+  int checkCapital = 0;
+  int checkLower = 0;
+
+  if (!s.length()) {
+    return false;
+  }
+
+  for (int i = 0; i < s.length(); i++) {
+    if (s[i] >= 'A' && s[i] <= 'Z') {
+      checkCapital += 1;
+    } else if (s[i] >= 'a' && s[i] <= 'z') {
+      checkLower += 1;
+    }
+  }
+
+  // its all capital letters
+  if (checkCapital == s.length()) {
+    return true;
+  } else if (checkLower == s.length()) {
+    return true;  // all lower
+  } else if ((checkLower == s.length() - 1) && s[0] >= 'A' && s[0] <= 'Z') {
+    // only the first letter is capital
+    return true;
+  }
+  return false;
+}
+
+// checks for palindromes for number strings
+bool is_palindrome(string num, bool * error) {
+  *error = false;
+
+  for (int j = 0; j < num.length(); j++) {
+    if (num[j] >= 'A' && num[j] <= 'z') {
+      *error = true;
+      return false;
+    }
+  }
+
+  if (num.length() > 1 && num[0] == '0') {
+    *error = true;
+    return false;
+  }
+
+  if (num.length() == 1) {
+    return true;
+  }
+
+  for (int i = 0; i <= num.length() / 2; i++) {
+    if (num[i] != (num[num.length() - 1 - i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// adds two numbers in string form
+string add(const string& num1, const string& num2) {
+  string number1 = num1;
+  string number2 = num2;
+  string result = "";
+  string zero = "0";
+  int carry = 0;
+  int sum = 0;
+  int remainder = 0;
+
+  // pads the shorter number with zeros to create numbers
+  // of equal length
+  while (number1.length() > number2.length()) {
+    number2 = zero + number2;
+  }
+
+  while (number2.length() > number1.length()) {
+    number1 = zero + number1;
+  }
+
+  // convert [i] index to int and add from num1 and num2
+  // if number is 10 or above, add 1 to the next digit
+  // otherwise, just take the sum
+  for (int i = number1.length() - 1; i >= 0; i--) {
+    sum = (number1[i] - '0') + (number2[i] - '0') + carry;
+
+    // is triggered if there is an overflow within the single
+    // digit addition, then sets carry to 1 to add to the next
+    // round of addition
+    if (sum >= 10) {
+      remainder = sum % 10;
+      carry = 1;
+    } else {
+      remainder = sum;
+      carry = 0;
+    }
+    // convert remainder to string and add it as the most significant digit
+    result = std::to_string(remainder) + result;
+  }
+
+  // is only triggered if there is still a carry after the for loop finishes
+  // adds the carry to the beginning of the number to finish the adding
+  if (carry == 1) {
+    result = std::to_string(carry) + result;
+  }
+  return result;
+}
+
+// converts a number form one base to another
+string convertbase(const string& numstr, const int frombase, const int tobase) {
+  string newBase = "";
+  int from10 = 0;
+  int baseMultiple = 1;
+
+  for (int i = 1; i <= numstr.length(); i++) {
+    from10 = from10 + (numstr.at(numstr.length() - i) - '0') * baseMultiple;
+    baseMultiple = baseMultiple * frombase;
+  }
+
+  while (from10 > 0) {
+    string pad = "";
+    int addVar = (from10 % tobase) + '0';
+    from10 = from10 / tobase;
+    pad = pad + (static_cast<char>(addVar));
+    newBase.insert(0, pad);
+  }
+
+  return newBase;
+}
+
+// taken from the end of the is_palindrome function
+// returns true if a number is a palindrome
+bool palinChecker(string num) {
+  for (int i = 0; i <= num.length() / 2; i++) {
+    if (num[i] != (num[num.length() - 1 - i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// checks for valid palindromes of a number in bases from 2 to
+// one less than the number
+string multibase(int x) {
+  string strValNum = std::to_string(x);
+  string validBases = "";
+
+  // loops from 2 to one less than the number
+  for (int i = 2; i <= x - 1; i++) {
+    // converts the number into a different base and checks if it
+    // is a palindrome, if it is, then it adds the valid base to the string
+    if (palinChecker(convertbase(strValNum, 10, i))) {
+      validBases = validBases + std::to_string(i) + " ";
+    }
+  }
+  // gets rid of the extra space after the string of valid bases
+  validBases = validBases.erase(validBases.length() - 1);
+
+  return validBases;
+}

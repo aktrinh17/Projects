@@ -1,0 +1,19 @@
+# depslib dependency file v1.0
+1523638409 source:/media/sf_vmShare/lab3/main.cpp
+	<algorithm>
+	<array>
+	<cmath>
+	<cstdint>
+	<iomanip>
+	<iostream>
+	<string>
+	<unordered_map>
+	<vector>
+	"timer.h"
+
+1521231531 /media/sf_vmShare/lab3/timer.h
+	<iostream>
+	<chrono>
+	<string>
+	<vector>
+

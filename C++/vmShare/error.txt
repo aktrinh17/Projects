@@ -1,0 +1,3 @@
+./lab2prog.cpp: line 2: $'\r': command not found
+./lab2prog.cpp: line 3: syntax error near unexpected token `('
+./lab2prog.cpp: line 3: `int main()'
